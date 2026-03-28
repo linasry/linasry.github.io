@@ -1,0 +1,3846 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>ប្រព័ន្ធគ្រប់គ្រងចម្ការកៅស៊ូ v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --primary:#1a6b3a;--primary-d:#135228;--primary-l:#e8f5ed;--primary-m:#2d9653;
+  --gold:#c8a400;--gold-l:#fff8e0;
+  --danger:#c0392b;--danger-l:#fdecea;
+  --info:#1565c0;--info-l:#e3f0ff;
+  --warn:#e67e00;--warn-l:#fff3e0;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --bg:#f4f7f5;--surface:#fff;
+  --border:#e0e8e3;--border-l:#f0f5f2;
+  --radius:12px;--radius-s:8px;--radius-xs:6px;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-m:0 4px 20px rgba(0,0,0,.12);
+  --sidebar:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{
+  /* Force mobile rendering in Android WebView */
+  -webkit-text-size-adjust:100%;
+  -moz-text-size-adjust:100%;
+  text-size-adjust:100%;
+  width:100%;
+  max-width:100%;
+}
+body{
+  font-family:'Noto Sans Khmer',sans-serif;font-size:14px;line-height:1.6;color:var(--text);background:var(--bg);
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ===== LOGIN ===== */
+#loginScreen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:linear-gradient(135deg,#0d4a28 0%,#1a6b3a 50%,#2d9653 100%);
+  position:relative;overflow:hidden;
+}
+#loginScreen::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.login-box{
+  background:var(--surface);border-radius:20px;padding:40px;
+  width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3);
+  position:relative;z-index:1;
+}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .logo-icon{
+  width:72px;height:72px;background:linear-gradient(135deg,var(--primary),var(--primary-m));
+  border-radius:18px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:32px;margin-bottom:12px;box-shadow:0 8px 24px rgba(26,107,58,.3);
+}
+.login-logo h1{font-size:18px;font-weight:700;color:var(--primary)}
+.login-logo p{font-size:12px;color:var(--text3);margin-top:3px}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.login-field input{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);
+  border-radius:var(--radius-s);font-family:inherit;font-size:13px;
+  outline:none;transition:border-color .2s;color:var(--text);
+}
+.login-field input:focus{border-color:var(--primary)}
+.login-err{
+  background:var(--danger-l);color:var(--danger);
+  padding:10px 14px;border-radius:var(--radius-xs);font-size:12px;
+  margin-bottom:14px;display:none;border-left:3px solid var(--danger);
+}
+.btn-login{
+  width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--primary-m));
+  color:#fff;border:none;border-radius:var(--radius-s);font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s;
+}
+.btn-login:hover{opacity:.9}
+.btn-login:active{transform:scale(.99)}
+.login-hint{
+  margin-top:16px;padding:12px;background:var(--primary-l);
+  border-radius:var(--radius-xs);font-size:11px;color:var(--primary-d);
+}
+
+/* ===== APP LAYOUT ===== */
+#app{display:none;min-height:100vh}
+#sidebar{
+  width:var(--sidebar);background:var(--primary-d);color:#fff;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#sidebar .sb-nav-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+}
+#sidebar .sb-nav-scroll::-webkit-scrollbar{width:3px}
+#sidebar .sb-nav-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
+.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo h2{font-size:14px;font-weight:700;line-height:1.3}
+.sb-logo small{font-size:10px;opacity:.55;display:block;margin-top:2px}
+.sb-user{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.sb-avatar{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.25);
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.sb-user-role{font-size:10px;opacity:.55;margin-top:1px;letter-spacing:.02em}
+.sb-logout{
+  width:28px;height:28px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  color:rgba(255,255,255,.55);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:background .2s, color .2s, border-color .2s;
+  padding:0;
+}
+.sb-logout:hover{
+  background:rgba(220,50,50,.75);
+  border-color:rgba(220,50,50,.5);
+  color:#fff;
+}
+.sb-logout svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-group{padding:8px 0 4px}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.4;padding:0 16px 5px}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 16px;cursor:pointer;font-size:13px;
+  color:rgba(255,255,255,.75);transition:background .15s,color .15s;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;font-weight:600;border-left-color:var(--gold)}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-text{transition:opacity .2s}
+#app.sb-collapsed #sidebar .nav-item{position:relative}
+/* Tooltip rendered via JS */
+#sb-tooltip{
+  position:fixed;
+  left:66px;
+  background:var(--primary-d);
+  color:#fff;
+  padding:5px 12px;
+  border-radius:6px;
+  font-size:12px;
+  font-family:'Noto Sans Khmer',sans-serif;
+  white-space:nowrap;
+  z-index:9999;
+  box-shadow:0 3px 10px rgba(0,0,0,.3);
+  pointer-events:none;
+  display:none;
+  transform:translateY(-50%);
+  border-left:3px solid var(--gold);
+}
+.nav-item.locked{opacity:.35;cursor:not-allowed}
+
+/* ===== SIDEBAR COLLAPSE ===== */
+#app.sb-collapsed #sidebar{width:56px}
+#app.sb-collapsed #sidebar .sb-logo h2,
+#app.sb-collapsed #sidebar .sb-logo small,
+#app.sb-collapsed #sidebar .sb-user-info,
+#app.sb-collapsed #sidebar .nav-label,
+#app.sb-collapsed #sidebar .nav-text{display:none}
+#app.sb-collapsed #sidebar .nav-item{padding:10px;justify-content:center}
+#app.sb-collapsed #sidebar .nav-icon{width:auto;font-size:18px}
+#app.sb-collapsed #sidebar .sb-user{padding:10px;justify-content:center}
+#app.sb-collapsed #sidebar .sb-avatar{margin:0}
+#app.sb-collapsed #sidebar .sb-logout{display:none}
+#app.sb-collapsed #main{margin-left:56px}
+#app.sb-collapsed .sb-logo{padding:14px 0;display:flex;justify-content:center}
+#sidebar,#main{transition:width .25s ease,margin-left .25s ease}
+.sb-toggle-btn{
+  position:fixed;top:18px;left:calc(var(--sidebar) - 13px);
+  width:26px;height:26px;
+  background:var(--primary-d);border:2px solid rgba(255,255,255,.25);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:11px;color:white;z-index:300;
+  transition:left .25s ease, transform .25s ease, background .2s;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.sb-toggle-btn:hover{background:var(--gold);border-color:var(--gold)}
+#app.sb-collapsed .sb-toggle-btn{
+  left:calc(56px - 13px);
+  transform:rotate(180deg);
+}
+
+#main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  height:54px;padding:0 22px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50;
+  box-shadow:var(--shadow);
+}
+.topbar-title{font-size:15px;font-weight:700;color:var(--primary)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-date{font-size:11px;color:var(--text3)}
+.content{padding:22px}
+.page{display:none}.page.active{display:block}
+
+/* ===== COMPONENTS ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:var(--text)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:11px;color:var(--text3);margin-bottom:5px}
+.stat-val{font-size:22px;font-weight:700;color:var(--text)}
+.stat-val-sm{font-size:22px;font-weight:700;color:var(--text)}
+.stat-val-danger{color:var(--danger) !important}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.stat-sub-danger{font-size:10px;color:var(--danger);margin-top:2px}
+.stat.g{border-left:3px solid var(--primary)}
+.stat.a{border-left:3px solid var(--gold)}
+.stat.b{border-left:3px solid var(--info)}
+.stat.r{border-left:3px solid var(--danger)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:var(--radius-xs);font-size:12px;font-family:inherit;cursor:pointer;border:none;font-weight:600;transition:opacity .15s,transform .1s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn-p{background:var(--primary);color:#fff}.btn-p:hover{opacity:.88}
+.btn-g{background:var(--gold);color:#fff}.btn-g:hover{opacity:.88}
+.btn-d{background:var(--danger);color:#fff}.btn-d:hover{opacity:.88}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-o:hover{background:var(--bg)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-ic{padding:6px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;font-size:13px;color:var(--text3);transition:background .15s}
+.btn-ic:hover{background:var(--bg);color:var(--text)}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border);background:var(--bg)}
+th{text-align:left;padding:8px 11px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+td{padding:9px 11px;border-bottom:1px solid var(--border-l);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcfa}
+
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.bg{background:var(--primary-l);color:var(--primary-d)}
+.ba{background:var(--gold-l);color:#7a5e00}
+.bb{background:var(--info-l);color:var(--info)}
+.br{background:var(--danger-l);color:var(--danger)}
+.bw{background:var(--warn-l);color:var(--warn)}
+.bgray{background:#f0f0f0;color:#555}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:11px;font-weight:700;color:var(--text2)}
+.fg input,.fg select,.fg textarea{
+  padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--radius-xs);
+  font-size:12px;font-family:inherit;outline:none;transition:border-color .15s;color:var(--text)
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary)}
+.fg textarea{resize:vertical;min-height:70px}
+.form-actions{display:flex;gap:8px;margin-top:10px}
+.full-col{grid-column:1/-1}
+
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);padding:22px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-m)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-size:14px;font-weight:700}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);padding:2px;line-height:1}
+.modal-close:hover{color:var(--text)}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:9px 14px;cursor:pointer;font-size:12px;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;white-space:nowrap}
+.tab:hover{color:var(--primary)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-size:15px;font-weight:700}
+.sec-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+/* grid stacking handled in responsive section below */
+
+#toast{
+  position:fixed;bottom:22px;right:22px;padding:11px 16px;
+  border-radius:var(--radius-xs);font-size:12px;font-weight:700;
+  z-index:999;display:none;box-shadow:var(--shadow-m);max-width:280px;
+  color:#fff;
+}
+#toast.show{display:block;animation:tin .3s ease}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.empty{text-align:center;padding:32px 16px;color:var(--text3)}
+.empty-i{font-size:36px;margin-bottom:8px}
+.divider{border:none;border-top:1px solid var(--border-l);margin:14px 0}
+
+/* ===== ADMIN - USER MANAGEMENT ===== */
+.user-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;display:flex;align-items:center;gap:14px;
+  transition:box-shadow .2s;
+}
+.user-card:hover{box-shadow:var(--shadow-m)}
+.user-av{
+  width:46px;height:46px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;
+}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:700}
+.user-role-badge{margin-top:3px}
+.user-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+
+/* Permission table */
+.perm-table{width:100%;border-collapse:collapse;font-size:12px}
+.perm-table th{padding:8px 10px;background:var(--bg);text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase}
+.perm-table td{padding:8px 10px;border-bottom:1px solid var(--border-l)}
+.perm-table tr:last-child td{border-bottom:none}
+.perm-check{width:16px;height:16px;cursor:pointer;accent-color:var(--primary)}
+
+/* Welcome banner */
+.welcome{
+  background:linear-gradient(135deg,var(--primary-d) 0%,var(--primary) 60%,var(--primary-m) 100%);
+  border-radius:var(--radius);padding:20px 22px;color:#fff;margin-bottom:18px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.welcome h2{font-size:17px;font-weight:700;margin-bottom:3px}
+.welcome p{font-size:12px;opacity:.8}
+.welcome-icon{font-size:44px;opacity:.25}
+
+/* Riel formatter */
+.riel{font-family:'Noto Sans Khmer',sans-serif}
+
+/* Access denied */
+.access-denied{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;color:var(--text3);
+}
+.access-denied .icon{font-size:52px;margin-bottom:12px}
+.access-denied h3{font-size:15px;font-weight:700;color:var(--text2);margin-bottom:6px}
+
+/* Log table */
+.log-entry{padding:8px 0;border-bottom:1px solid var(--border-l);display:flex;gap:10px;align-items:flex-start}
+.log-entry:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600}
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:11px 14px;transition:border-color .2s}
+.toggle-wrap:hover{border-color:var(--primary)}
+.toggle-wrap.hidden-item{opacity:.5;background:var(--bg)}
+.toggle-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
+.toggle-icon{font-size:16px;width:22px;text-align:center}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:22px;cursor:pointer;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked + .toggle-slider{background:var(--primary)}
+.toggle input:checked + .toggle-slider:before{transform:translateX(18px)}
+.menu-group-title{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);padding:6px 2px 4px;grid-column:1/-1}
+
+
+/* ===== SEARCH BAR ===== */
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius-s);padding:7px 11px;
+  transition:border-color .15s;
+}
+.search-bar:focus-within{border-color:var(--primary)}
+.search-bar input{
+  border:none;outline:none;font-family:inherit;font-size:13px;
+  color:var(--text);background:transparent;width:100%;min-width:0;
+}
+.search-bar .search-icon{color:var(--text3);font-size:14px;flex-shrink:0}
+
+/* ===== QUICK FILTER CHIPS ===== */
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{
+  padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1.5px solid var(--border);cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+  background:transparent;color:var(--text2);
+}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* ===== EMPTY STATE IMPROVEMENT ===== */
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--text3);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.empty-state .empty-icon{font-size:40px;opacity:.5}
+.empty-state h4{font-size:13px;font-weight:600;color:var(--text2);margin:0}
+.empty-state p{font-size:12px;margin:0}
+
+
+
+/* ===== MOBILE OVERLAY BACKDROP ===== */
+#sb-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:99;opacity:0;transition:opacity .25s;
+}
+#sb-overlay.open{opacity:1}
+
+/* ===== HAMBURGER BUTTON ===== */
+.mob-menu-btn{
+  display:none;
+  width:40px;height:40px;
+  background:var(--primary-l);border:1px solid var(--border);
+  border-radius:var(--radius-xs);cursor:pointer;
+  align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;color:var(--primary);
+  /* Larger tap target for mobile */
+  touch-action:manipulation;
+}
+
+/* =====================================================
+   TABLET: Huawei MatePad T8 — 8" ~800px wide
+   Keep sidebar visible but narrower, 2-col layouts
+   ===================================================== */
+
+/* =====================================================
+   TABLET 600-900px
+   ===================================================== */
+@media(max-width:900px) and (min-width:721px){
+  :root{--sidebar:220px}
+  .content{padding:16px}
+  .stats-grid{grid-template-columns:repeat(3,1fr)!important;gap:10px}
+  .stat{padding:12px 14px}
+  .topbar{height:52px;padding:0 16px}
+  .topbar-date{display:none}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .form-grid{grid-template-columns:repeat(2,1fr)}
+  .grid3{grid-template-columns:1fr 1fr}
+  .modal-ov{padding:16px}
+  .modal{max-width:90vw;max-height:88vh}
+  .users-grid{grid-template-columns:repeat(2,1fr)}
+  #admin-roles .grid2{grid-template-columns:1fr 1fr}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  .tab{white-space:nowrap}
+}
+
+/* =====================================================
+   PHONE 720px — 1640x720 portrait (e.g. tall Android)
+   Sidebar hidden, mobile-style layout
+   ===================================================== */
+@media(max-width:720px) and (min-width:600px){
+  :root{--sidebar:300px}
+
+  /* SIDEBAR — slide-in overlay like mobile */
+  .mob-menu-btn{display:flex}
+  #sidebar{width:var(--sidebar);transform:translateX(-100%);transition:transform .25s ease;z-index:150;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  #app.mob-open #sidebar{transform:translateX(0)}
+  #sb-overlay.open{display:block}
+  #main{margin-left:0!important}
+  .sb-toggle-btn{display:none!important}
+
+  /* TOPBAR */
+  .topbar{padding:0 14px;height:52px;gap:8px}
+  .topbar-title{font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-right{gap:6px;flex-shrink:0}
+  .topbar-date{display:none}
+  .topbar-right .btn span{display:none}
+  .topbar-right .btn-sm{padding:6px 10px;font-size:12px;min-width:36px;justify-content:center}
+
+  /* CONTENT */
+  .content{padding:14px;padding-bottom:24px}
+
+  /* STATS — 3 columns fits nicely at 720px */
+  .stats-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:10px!important;margin-bottom:14px!important}
+  #dashStats,#tapStats,#invStats,#saleStats,#finStats,#repYieldStats{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:10px!important;margin-bottom:14px!important}
+  .stat{padding:10px 12px!important;width:100%!important;box-sizing:border-box!important;min-width:0!important}
+  .stat-lbl{font-size:10px!important}
+  .stat-val{font-size:16px!important;word-break:break-word!important}
+  .stat-val-sm{font-size:12px!important;word-break:break-all!important}
+  .stat-sub{font-size:9px!important}
+
+  /* LAYOUT GRIDS */
+  .grid2{grid-template-columns:1fr 1fr!important}
+  .grid3{grid-template-columns:1fr 1fr!important}
+  #fin-grid,#page-finance .grid2,#page-settings .grid2{grid-template-columns:1fr 1fr!important}
+  #admin-roles .grid2{grid-template-columns:1fr!important}
+
+  /* WELCOME */
+  .welcome{padding:14px 16px;margin-bottom:14px}
+  .welcome h2{font-size:15px}.welcome p{font-size:12px}.welcome-icon{font-size:32px;opacity:.2}
+
+  /* SECTION HEADER */
+  .sec-hd{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin-bottom:12px!important;align-items:center!important;justify-content:space-between!important}
+  .sec-hd>div:first-child{flex:1;min-width:0}
+  .sec-title{font-size:14px;font-weight:700}
+
+  /* CARDS */
+  .card{padding:14px!important}
+  .card-title{font-size:13px}
+
+  /* TABLES — wider at 720px, less cramped */
+  .table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;width:100%!important;display:block!important}
+  table{font-size:12px!important;width:100%}
+  th{font-size:10px!important;padding:7px 9px!important;white-space:nowrap!important}
+  td{padding:7px 9px!important;white-space:nowrap!important}
+  td:last-child{padding:5px 6px!important}
+  .btn-ic{padding:6px;font-size:13px}
+  #page-plantation table{min-width:420px}
+  #page-trees table{min-width:380px}
+  #page-employees table{min-width:420px}
+  #page-buyers table{min-width:420px}
+  #page-tapping table{min-width:460px}
+  #page-labor table{min-width:440px}
+  #page-inventory table{min-width:400px}
+  #page-transport table{min-width:400px}
+  #page-sales table{min-width:460px}
+  #page-finance table{min-width:280px}
+  .perm-table{min-width:280px}
+
+  /* BUTTONS */
+  .btn{padding:8px 13px;font-size:13px;border-radius:7px}
+  .btn-sm{padding:6px 10px;font-size:12px}
+  .btn,.btn-sm,.btn-ic{min-height:38px;touch-action:manipulation}
+
+  /* FORMS */
+  .form-grid,.modal .form-grid{grid-template-columns:1fr 1fr!important}
+  .modal .grid2{grid-template-columns:1fr 1fr!important}
+  .fg label{font-size:11px}
+  .fg input,.fg select,.fg textarea{padding:9px 10px;font-size:15px}
+  .form-actions{gap:8px;flex-wrap:wrap}
+  .form-actions .btn{flex:1;min-width:120px;justify-content:center}
+
+  /* TABS */
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap;padding:8px 13px;font-size:13px}
+
+  /* FILTER ROWS */
+  .flex-row-wrap{flex-direction:row!important;gap:8px!important;flex-wrap:wrap}
+  .flex-row-wrap .search-bar{flex:1;min-width:200px!important}
+  #filter-tapping-type,#filter-sales-pay{padding:8px 10px!important;font-size:13px!important}
+
+  /* MODAL — centered (not bottom sheet) at 720px */
+  .modal-ov{padding:16px;align-items:center}
+  .modal{border-radius:14px;max-width:560px!important;width:100%!important;max-height:90vh;padding:20px 18px}
+  .modal-hd{margin-bottom:16px}
+  .modal-title{font-size:14px}
+  .modal::before{display:none}
+
+  /* TOAST */
+  #toast{bottom:max(16px,env(safe-area-inset-bottom));right:16px;left:auto;max-width:300px;text-align:left;font-size:12px}
+
+  /* LOGIN */
+  .login-box{padding:32px 28px;max-width:400px}
+  .login-logo .logo-icon{width:64px;height:64px;font-size:28px}
+  .login-logo h1{font-size:16px}
+
+  /* ADMIN */
+  .users-grid{grid-template-columns:repeat(2,1fr)}
+  .user-card{padding:14px;gap:12px}
+  .user-av{width:44px;height:44px;font-size:16px}
+
+  /* MISC */
+  .search-bar{box-sizing:border-box}
+  .filter-chips{gap:6px}
+  .chip{font-size:11px;padding:4px 10px}
+  .log-entry{gap:9px}
+  .card+.card{margin-top:12px}
+  #finChart,#yChart{overflow-x:auto;min-width:0}
+  #payContent{overflow-x:auto}
+}
+
+/* =====================================================
+   MOBILE up to 599px
+   ===================================================== */
+@media(max-width:599px){
+  :root{--sidebar:280px}
+
+  /* SIDEBAR */
+  .mob-menu-btn{display:flex}
+  #sidebar{width:var(--sidebar);transform:translateX(-100%);transition:transform .25s ease;z-index:150;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  #app.mob-open #sidebar{transform:translateX(0)}
+  #sb-overlay.open{display:block}
+  #main{margin-left:0!important}
+  .sb-toggle-btn{display:none!important}
+
+  /* TOPBAR */
+  .topbar{padding:0 10px;height:50px;gap:6px;padding-top:env(safe-area-inset-top)}
+  .topbar-title{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-right{gap:5px;flex-shrink:0}
+  .topbar-date{display:none}
+  .topbar-right .btn span{display:none}
+  .topbar-right .btn-sm{padding:6px 8px;font-size:12px;min-width:36px;justify-content:center}
+
+  /* CONTENT */
+  .content{padding:10px;padding-bottom:24px}
+
+  /* STATS - FORCE 2 COLUMNS */
+  .stats-grid{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:8px!important;margin-bottom:12px!important}
+  #dashStats,#tapStats,#invStats,#saleStats,#finStats,#repYieldStats{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:8px!important;margin-bottom:12px!important}
+  .stat{padding:8px 10px!important;width:100%!important;box-sizing:border-box!important;min-width:0!important;overflow:hidden!important}
+  .stat-lbl{font-size:9px!important}
+  .stat-val{font-size:14px!important;word-break:break-word!important}
+  .stat-val-sm{font-size:11px!important;word-break:break-all!important}
+  .stat-sub{font-size:8px!important}
+
+  /* LAYOUT GRIDS */
+  .grid2,.grid3{grid-template-columns:1fr!important}
+  #fin-grid,#page-finance .grid2,#page-settings .grid2,#admin-roles .grid2{grid-template-columns:1fr!important}
+
+  /* WELCOME */
+  .welcome{padding:12px 14px;margin-bottom:12px;flex-direction:column;gap:4px}
+  .welcome h2{font-size:14px}.welcome p{font-size:11px}.welcome-icon{display:none}
+
+  /* SECTION HEADER */
+  .sec-hd{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin-bottom:10px!important;align-items:center!important;justify-content:space-between!important}
+  .sec-hd>div:first-child{flex:1;min-width:0}
+  .sec-hd>button,.sec-hd>div:last-child:not(:first-child){flex-shrink:0}
+  .sec-title{font-size:13px;font-weight:700}
+
+  /* CARDS */
+  .card{padding:10px!important;border-radius:10px}
+  .card-hd{margin-bottom:10px}
+  .card-title{font-size:12px}
+
+  /* TABLES */
+  .table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;width:100%!important;display:block!important}
+  table{font-size:11px!important;width:100%}
+  th{font-size:9px!important;padding:6px 7px!important;white-space:nowrap!important}
+  td{padding:6px 7px!important;white-space:nowrap!important}
+  td:last-child{padding:4px 5px!important}
+  .btn-ic{padding:5px;font-size:12px}
+  #page-plantation table{min-width:360px}
+  #page-trees table{min-width:340px}
+  #page-employees table{min-width:380px}
+  #page-buyers table{min-width:380px}
+  #page-tapping table{min-width:420px}
+  #page-labor table{min-width:400px}
+  #page-inventory table{min-width:360px}
+  #page-transport table{min-width:360px}
+  #page-sales table{min-width:420px}
+  #page-finance table{min-width:260px}
+  .perm-table{min-width:260px}
+
+  /* BUTTONS */
+  .btn{padding:7px 11px;font-size:12px;border-radius:6px}
+  .btn-sm{padding:5px 9px;font-size:11px}
+  .btn,.btn-sm,.btn-ic{min-height:36px;touch-action:manipulation}
+
+  /* FORMS */
+  .form-grid,.modal .form-grid{grid-template-columns:1fr!important}
+  .modal .grid2{grid-template-columns:1fr!important}
+  .fg label{font-size:11px}
+  .fg input,.fg select,.fg textarea{padding:9px 10px;font-size:16px}
+  .form-actions{gap:8px;flex-wrap:wrap}
+  .form-actions .btn{flex:1;min-width:120px;justify-content:center}
+
+  /* TABS */
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap;padding:8px 11px;font-size:12px}
+
+  /* FILTER ROWS */
+  .flex-row-wrap{flex-direction:column!important;gap:8px!important}
+  .flex-row-wrap .search-bar{width:100%!important;min-width:0!important}
+  #filter-tapping-type,#filter-sales-pay{width:100%!important;padding:9px 10px!important;font-size:14px!important}
+
+  /* MODAL */
+  .modal-ov{padding:0;align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;max-width:100%!important;width:100%!important;max-height:92vh;padding:18px 14px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+  .modal-hd{margin-bottom:14px}
+  .modal-title{font-size:14px}
+  .modal::before{content:'';display:block;width:36px;height:4px;border-radius:2px;background:var(--border);margin:-8px auto 12px}
+
+  /* TOAST */
+  #toast{bottom:max(16px,env(safe-area-inset-bottom));right:10px;left:10px;max-width:100%;text-align:center;font-size:12px}
+
+  /* LOGIN */
+  .login-box{padding:24px 16px;margin:10px;border-radius:16px}
+  .login-logo .logo-icon{width:60px;height:60px;font-size:26px}
+  .login-logo h1{font-size:15px}
+
+  /* ADMIN */
+  .users-grid{grid-template-columns:1fr}
+  .user-card{padding:12px;gap:10px}
+  .user-av{width:40px;height:40px;font-size:14px}
+  .user-name{font-size:12px}
+
+  /* MISC */
+  .search-bar{width:100%;box-sizing:border-box}
+  .search-bar input{font-size:13px;width:100%}
+  .filter-chips{gap:5px}
+  .chip{font-size:10px;padding:4px 9px}
+  .log-entry{gap:8px}
+  .card+.card{margin-top:10px}
+  #finChart,#yChart{overflow-x:auto;min-width:0}
+  #payContent{overflow-x:auto}
+  #imp_paste{font-size:13px!important}
+}
+
+/* =====================================================
+   EXTRA SMALL — 360px (e.g. 360x740 portrait phone)
+   Inherits from max-599px, overrides for tight width
+   ===================================================== */
+@media(max-width:360px){
+
+  /* TOPBAR */
+  .topbar{padding:0 8px;height:48px}
+  .topbar-title{font-size:11px}
+  .topbar-right .btn-sm{padding:5px 6px;font-size:11px;min-width:32px}
+
+  /* CONTENT */
+  .content{padding:8px;padding-bottom:20px}
+
+  /* STATS — keep 2 columns, tighter */
+  .stats-grid,#dashStats,#tapStats,#invStats,#saleStats,#finStats,#repYieldStats{
+    grid-template-columns:repeat(2,1fr)!important;
+    gap:6px!important;
+    margin-bottom:10px!important;
+  }
+  .stat{padding:7px 8px!important}
+  .stat-lbl{font-size:8px!important}
+  .stat-val{font-size:12px!important;word-break:break-word!important}
+  .stat-val-sm{font-size:10px!important;word-break:break-all!important}
+  .stat-sub{font-size:7px!important}
+
+  /* WELCOME */
+  .welcome{padding:10px 12px;margin-bottom:10px}
+  .welcome h2{font-size:12px}.welcome p{font-size:10px}
+
+  /* SECTION HEADER */
+  .sec-title{font-size:12px!important}
+  .sec-hd{gap:6px!important;margin-bottom:8px!important}
+
+  /* CARDS */
+  .card{padding:8px!important;border-radius:9px}
+  .card-hd{margin-bottom:8px}
+  .card-title{font-size:11px}
+
+  /* TABLES — tight min-width for 360px */
+  table{font-size:10px!important}
+  th{font-size:8px!important;padding:5px 5px!important}
+  td{padding:5px 5px!important}
+  td:last-child{padding:4px 4px!important}
+  .btn-ic{padding:4px;font-size:11px}
+  #page-plantation table{min-width:300px}
+  #page-trees table{min-width:280px}
+  #page-employees table{min-width:310px}
+  #page-buyers table{min-width:310px}
+  #page-tapping table{min-width:340px}
+  #page-labor table{min-width:320px}
+  #page-inventory table{min-width:290px}
+  #page-transport table{min-width:290px}
+  #page-sales table{min-width:340px}
+  #page-finance table{min-width:240px}
+  .perm-table{min-width:240px}
+
+  /* BUTTONS */
+  .btn{padding:6px 9px;font-size:11px}
+  .btn-sm{padding:4px 8px;font-size:10px}
+  .btn,.btn-sm,.btn-ic{min-height:34px}
+  .form-actions .btn{min-width:100px}
+
+  /* FORMS */
+  .fg input,.fg select,.fg textarea{padding:8px 9px;font-size:15px}
+  .fg label{font-size:10px}
+
+  /* TABS */
+  .tab{padding:7px 9px!important;font-size:11px!important}
+
+  /* MODAL — bottom sheet, tighter padding */
+  .modal{padding:14px 12px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .modal-title{font-size:13px}
+  .modal-hd{margin-bottom:12px}
+
+  /* SIDEBAR */
+  :root{--sidebar:260px}
+
+  /* MISC */
+  .search-bar{padding:6px 9px}
+  .search-bar input{font-size:12px}
+  .chip{font-size:9px;padding:3px 8px}
+  .filter-chips{gap:4px}
+  .card+.card{margin-top:8px}
+  .users-grid{grid-template-columns:1fr}
+  .user-card{padding:10px;gap:8px}
+  .user-av{width:36px;height:36px;font-size:13px}
+  .user-name{font-size:11px}
+  .badge{font-size:9px;padding:2px 6px}
+  #toast{font-size:11px}
+  .login-box{padding:20px 14px;margin:8px}
+  .login-logo .logo-icon{width:52px;height:52px;font-size:22px}
+  .login-logo h1{font-size:13px}
+}
+
+/* ===== APK / ANDROID WEBVIEW — Touch & Tap ===== */
+.nav-item{
+  -webkit-tap-highlight-color: rgba(255,255,255,0.12);
+  tap-highlight-color: rgba(255,255,255,0.12);
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn, .btn-ic, .btn-login, .modal-close, .tab, .chip{
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Prevent content shift/jump on nav tap in APK */
+#main{
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.page{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+/* APK: ensure active page fills full screen */
+.page.active{
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 54px);
+}
+
+/* Helper */
+.flex-row-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.flex-row-wrap .search-bar{flex:1;min-width:160px}
+
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">🌳</div>
+      <h1>ប្រព័ន្ធគ្រប់គ្រងចម្ការកៅស៊ូ</h1>
+      <p>Rubber Management System v3.0</p>
+    </div>
+    <div id="loginErr" class="login-err">❌ ឈ្មោះអ្នកប្រើ ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ</div>
+    <div class="login-field">
+      <label>👤 ឈ្មោះអ្នកប្រើ</label>
+      <input type="text" id="li_user" placeholder="បញ្ចូលឈ្មោះអ្នកប្រើ" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>🔒 លេខសម្ងាត់</label>
+      <input type="password" id="li_pass" placeholder="បញ្ចូលលេខសម្ងាត់" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">🔐 ចូលប្រព័ន្ធ</button>
+    <!-- <div class="login-hint">
+      <strong>គណនីសាកល្បង:</strong><br>
+      admin / admin123 → Admin<br>
+      manager / mgr123 → Manager<br>
+      worker / wrk123 → Worker
+    </div> -->
+  </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div id="sb-overlay" onclick="closeMobileSidebar()"></div>
+<div id="app">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <h2>🌳 ចម្ការកៅស៊ូ</h2>
+    <small>Rubber Management v3.0</small>
+  </div>
+  <div class="sb-toggle-btn" onclick="toggleSidebar()" title="បិទ/បើក Sidebar">◀</div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">A</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name" id="sbName">Admin</div>
+      <div class="sb-user-role" id="sbRole">Administrator</div>
+    </div>
+    <button class="sb-logout" onclick="doLogout()" title="ចេញប្រព័ន្ធ">
+  <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+</button>
+  </div>
+
+  <div class="sb-nav-scroll">
+  <div class="nav-group">
+    <div class="nav-label">ទូទៅ</div>
+    <div class="nav-item active" id="nav-dashboard" data-label="ផ្ទាំងគ្រប់គ្រង" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span><span class="nav-text"> ផ្ទាំងគ្រប់គ្រង</span></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">ទិន្នន័យគោល</div>
+    <div class="nav-item" id="nav-plantation" data-label="ព័ត៌មានចម្ការ" onclick="showPage('plantation',this)"><span class="nav-icon">🌳</span><span class="nav-text"> ព័ត៌មានចម្ការ</span></div>
+    <div class="nav-item" id="nav-trees" data-label="ដើមកៅស៊ូ" onclick="showPage('trees',this)"><span class="nav-icon">🌱</span><span class="nav-text"> ដើមកៅស៊ូ</span></div>
+    <div class="nav-item" id="nav-employees" data-label="បុគ្គលិក" onclick="showPage('employees',this)"><span class="nav-icon">👷</span><span class="nav-text"> បុគ្គលិក</span></div>
+    <div class="nav-item" id="nav-buyers" data-label="អ្នកទិញ" onclick="showPage('buyers',this)"><span class="nav-icon">🚛</span><span class="nav-text"> អ្នកទិញ</span></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">ប្រតិបត្តិការ</div>
+    <div class="nav-item" id="nav-tapping" data-label="កាត់ជ័រ" onclick="showPage('tapping',this)"><span class="nav-icon">🪓</span><span class="nav-text"> កាត់ជ័រ & ប្រមូលផល</span></div>
+    <div class="nav-item" id="nav-labor" data-label="គ្រប់គ្រងកម្មករ" onclick="showPage('labor',this)"><span class="nav-icon">📋</span><span class="nav-text"> គ្រប់គ្រងកម្មករ</span></div>
+    <div class="nav-item" id="nav-inventory" data-label="ស្តុក" onclick="showPage('inventory',this)"><span class="nav-icon">📦</span><span class="nav-text"> ស្តុក</span></div>
+    <div class="nav-item" id="nav-transport" data-label="ដឹកជញ្ជូន" onclick="showPage('transport',this)"><span class="nav-icon">🚚</span><span class="nav-text"> ដឹកជញ្ជូន</span></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">ហិរញ្ញវត្ថុ</div>
+    <div class="nav-item" id="nav-sales" data-label="ការលក់" onclick="showPage('sales',this)"><span class="nav-icon">💰</span><span class="nav-text"> ការលក់</span></div>
+    <div class="nav-item" id="nav-finance" data-label="ហិរញ្ញវត្ថុ" onclick="showPage('finance',this)"><span class="nav-icon">💵</span><span class="nav-text"> ហិរញ្ញវត្ថុ</span></div>
+    <div class="nav-item" id="nav-reports" data-label="របាយការណ៍" onclick="showPage('reports',this)"><span class="nav-icon">📈</span><span class="nav-text"> របាយការណ៍</span></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">ប្រព័ន្ធ</div>
+    <div class="nav-item" id="nav-admin" data-label="គ្រប់គ្រងអ្នកប្រើ" onclick="showPage('admin',this)"><span class="nav-icon">🔐</span><span class="nav-text"> គ្រប់គ្រងអ្នកប្រើ</span></div>
+    <div class="nav-item" id="nav-settings" data-label="ការកំណត់" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-text"> ការកំណត់</span></div>
+  </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <button class="mob-menu-btn" onclick="toggleMobileSidebar()" title="Menu">☰</button>
+    <div class="topbar-title" id="pageTitle">ផ្ទាំងគ្រប់គ្រង</div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topDate"></span>
+      <button class="btn btn-o btn-sm" onclick="exportData()">📥 Export</button>
+      <button class="btn btn-o btn-sm" onclick="openImportModal()">📤 Import</button>
+      <input type="file" id="impFile" accept=".json,.txt" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="page-dashboard" class="page active">
+      <div class="welcome">
+        <div>
+          <h2 id="wMsg">🙏 សូមស្វាគមន៍!</h2>
+          <p id="wSub">ប្រព័ន្ធគ្រប់គ្រងចម្ការកៅស៊ូ</p>
+        </div>
+        <div class="welcome-icon">🌿</div>
+      </div>
+      <div class="stats-grid" id="dashStats"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📊 ជ័រ ៧ ថ្ងៃចុងក្រោយ (kg)</span></div>
+          <div id="wChart" style="display:flex;align-items:flex-end;gap:5px;height:100px;padding:10px 0 22px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📋 សកម្មភាពថ្មីៗ</span></div>
+          <div id="recentAct"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PLANTATION ===== -->
+    <div id="page-plantation" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🌳 ព័ត៌មានចម្ការ</div><div class="sec-sub">ទីតាំង ទំហំ ចម្ការ</div></div>
+        <button class="btn btn-p" id="btn-add-plantation" onclick="openModal('mPlantation')">+ បន្ថែម</button>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px">
+          <div class="search-bar"><span class="search-icon">🔍</span><input id="search-plantation" placeholder="ស្វែងរកចម្ការ..." oninput="renderPage('plantation')"></div>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ឈ្មោះ</th><th>ខេត្ត</th><th>ទំហំ(ha)</th><th>ដើម</th><th>ស្ថានភាព</th><th></th></tr></thead>
+          <tbody id="tbPlantation"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TREES ===== -->
+    <div id="page-trees" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🌱 ដើមកៅស៊ូ</div></div>
+        <button class="btn btn-p" id="btn-add-trees" onclick="openModal('mTree')">+ បន្ថែម</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ចម្ការ</th><th>ចំនួន</th><th>ពូជ</th><th>ថ្ងៃដាំ</th><th>អាយុ</th><th>ស្ថានភាព</th><th></th></tr></thead>
+          <tbody id="tbTrees"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EMPLOYEES ===== -->
+    <div id="page-employees" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">👷 បុគ្គលិក</div></div>
+        <button class="btn btn-p" id="btn-add-employees" onclick="openModal('mEmployee')">+ បន្ថែម</button>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px">
+          <div class="search-bar"><span class="search-icon">🔍</span><input id="search-employees" placeholder="ស្វែងរកបុគ្គលិក..." oninput="renderPage('employees')"></div>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ឈ្មោះ</th><th>តួនាទី</th><th>ទូរស័ព្ទ</th><th>របៀបបង់</th><th>អត្រា (៛)</th><th>ចម្ការ</th><th></th></tr></thead>
+          <tbody id="tbEmployees"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BUYERS ===== -->
+    <div id="page-buyers" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🚛 អ្នកទិញ / ផ្គត់ផ្គង់</div></div>
+        <button class="btn btn-p" id="btn-add-buyers" onclick="openModal('mBuyer')">+ បន្ថែម</button>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px">
+          <div class="search-bar"><span class="search-icon">🔍</span><input id="search-buyers" placeholder="ស្វែងរកអ្នកទិញ..." oninput="renderPage('buyers')"></div>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ឈ្មោះ</th><th>ប្រភេទ</th><th>ទូរស័ព្ទ</th><th>ទីតាំង</th><th>ថ្លៃ/kg (៛)</th><th>បំណុល (៛)</th><th></th></tr></thead>
+          <tbody id="tbBuyers"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TAPPING ===== -->
+    <div id="page-tapping" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🪓 កាត់ជ័រ & ប្រមូលផល</div></div>
+        <button class="btn btn-p" id="btn-add-tapping" onclick="openModal('mTapping')">+ កត់ត្រាជ័រ</button>
+      </div>
+      <div class="stats-grid" id="tapStats"></div>
+      <div class="card">
+        <div style="margin-bottom:12px" class="flex-row-wrap">
+          <div class="search-bar" style="flex:1;min-width:160px"><span class="search-icon">🔍</span><input id="search-tapping" placeholder="ស្វែងរក (ចម្ការ/កម្មករ)..." oninput="renderPage('tapping')"></div>
+          <select id="filter-tapping-type" onchange="renderPage('tapping')" style="padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--radius-s);font-family:inherit;font-size:12px;outline:none;color:var(--text)">
+            <option value="">ប្រភេទទាំងអស់</option>
+            <option value="latex">Latex</option>
+            <option value="sheet">Sheet</option>
+            <option value="block">Block</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ថ្ងៃ</th><th>ចម្ការ/Block</th><th>កម្មករ</th><th>kg</th><th>គុណភាព</th><th>ប្រភេទ</th><th>ចំណាំ</th><th></th></tr></thead>
+          <tbody id="tbTapping"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LABOR ===== -->
+    <div id="page-labor" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">📋 គ្រប់គ្រងកម្មករ</div></div>
+        <button class="btn btn-p" id="btn-add-labor" onclick="openModal('mAttendance')">+ វត្តមាន</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="stab(this,'labor','att')">📅 វត្តមាន</div>
+        <div class="tab" onclick="stab(this,'labor','pay')">💵 ប្រាក់ខែ</div>
+      </div>
+      <div id="labor-att" class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ថ្ងៃ</th><th>បុគ្គលិក</th><th>ស្ថានភាព</th><th>ម៉ោងចូល</th><th>ម៉ោងចេញ</th><th>Bonus(៛)</th><th>Penalty(៛)</th><th></th></tr></thead>
+          <tbody id="tbAttendance"></tbody></table>
+        </div>
+      </div>
+      <div id="labor-pay" class="card" style="display:none"><div id="payContent"></div></div>
+    </div>
+
+    <!-- ===== INVENTORY ===== -->
+    <div id="page-inventory" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">📦 ស្តុក</div></div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="btn btn-o" id="btn-out-inventory" onclick="openModal('mStockOut')">- ចេញ</button>
+          <button class="btn btn-p" id="btn-add-inventory" onclick="openModal('mStockIn')">+ ចូល</button>
+        </div>
+      </div>
+      <div class="stats-grid" id="invStats"></div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>មុខទំនិញ</th><th>ប្រភេទ</th><th>ស្តុក</th><th>ឯកតា</th><th>Min</th><th>ថ្លៃ(៛)</th><th>ស្ថានភាព</th><th></th></tr></thead>
+          <tbody id="tbInventory"></tbody></table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-hd"><span class="card-title">📊 ប្រវត្តិចូល/ចេញស្តុក</span></div>
+        <div class="table-wrap">
+          <table><thead><tr>
+            <th>ថ្ងៃ</th><th>មុខទំនិញ</th><th>ប្រភេទ</th><th>បរិមាណ</th><th>ចំណាំ</th>
+          </tr></thead>
+          <tbody id="tbStockHist"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TRANSPORT ===== -->
+    <div id="page-transport" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🚚 ដឹកជញ្ជូន</div></div>
+        <button class="btn btn-p" id="btn-add-transport" onclick="openModal('mTransport')">+ កត់ត្រា</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ថ្ងៃ</th><th>ប្រភព</th><th>គោលដៅ</th><th>រថយន្ត</th><th>kg</th><th>ថ្លៃដឹក(៛)</th><th>ស្ថានភាព</th><th></th></tr></thead>
+          <tbody id="tbTransport"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SALES ===== -->
+    <div id="page-sales" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">💰 ការលក់</div></div>
+        <button class="btn btn-p" id="btn-add-sales" onclick="openModal('mSale')">+ ការលក់ថ្មី</button>
+      </div>
+      <div class="stats-grid" id="saleStats"></div>
+      <div class="card">
+        <div style="margin-bottom:12px" class="flex-row-wrap">
+          <select id="filter-sales-pay" onchange="renderPage('sales')" style="padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--radius-s);font-family:inherit;font-size:12px;outline:none;color:var(--text);width:100%">
+            <option value="">ទូទាត់ទាំងអស់</option>
+            <option value="paid">✅ ទូទាត់ហើយ</option>
+            <option value="partial">⏳ មួយភាគ</option>
+            <option value="unpaid">❌ មិនទាន់</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Invoice</th><th>ថ្ងៃ</th><th>អតិថិជន</th><th>kg</th><th>ថ្លៃ/kg(៛)</th><th>សរុប(៛)</th><th>ទូទាត់</th><th></th></tr></thead>
+          <tbody id="tbSales"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FINANCE ===== -->
+    <div id="page-finance" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">💵 ហិរញ្ញវត្ថុ</div></div>
+        <button class="btn btn-p" id="btn-add-finance" onclick="openModal('mExpense')">+ ចំណាយ</button>
+      </div>
+      <div class="stats-grid" id="finStats"></div>
+      <div class="grid2" id="fin-grid" style="margin-top:14px">
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📊 ចំណូល vs ចំណាយ</span></div>
+          <div id="finChart" style="padding:8px 0;"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-title">💸 ចំណាយ</span></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>ថ្ងៃ</th><th>ប្រភេទ</th><th>ចំនួន(៛)</th><th></th></tr></thead>
+            <tbody id="tbExpense"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div id="page-reports" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">📈 របាយការណ៍</div></div>
+        <button class="btn btn-o" onclick="window.print()">🖨️ Print</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="stab(this,'reports','yield')">📊 ផលិតផល</div>
+        <div class="tab" onclick="stab(this,'reports','rlab')">👷 កម្មករ</div>
+        <div class="tab" onclick="stab(this,'reports','rfin')">💰 ហិរញ្ញ</div>
+      </div>
+      <div id="reports-yield">
+        <div class="stats-grid" id="repYieldStats"></div>
+        <div class="card"><div class="card-hd"><span class="card-title">📊 ផលិតផលតាមខែ</span></div>
+        <div id="yChart" style="padding:16px 8px 8px;"></div></div>
+      </div>
+      <div id="reports-rlab" style="display:none" class="card"><div id="repLabContent"></div></div>
+      <div id="reports-rfin" style="display:none" class="card"><div id="repFinContent"></div></div>
+    </div>
+
+    <!-- ===== ADMIN USER MANAGEMENT ===== -->
+    <div id="page-admin" class="page">
+      <div class="sec-hd">
+        <div><div class="sec-title">🔐 គ្រប់គ្រងអ្នកប្រើ & សិទ្ធិ</div><div class="sec-sub">Admin Panel</div></div>
+        <button class="btn btn-p" onclick="openModal('mAddUser')">+ បន្ថែមអ្នកប្រើ</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="stab(this,'admin','users')">👥 អ្នកប្រើ</div>
+        <div class="tab" onclick="stab(this,'admin','roles');rRoles()">🏷️ Roles</div>
+
+        <div class="tab" onclick="stab(this,'admin','logs')">📋 Log</div>
+      </div>
+
+      <div id="admin-roles" style="display:none">
+        <div class="grid2">
+          <!-- Left: Role list -->
+          <div class="card">
+            <div class="card-hd">
+              <span class="card-title">🏷️ Role ទាំងអស់</span>
+              <button class="btn btn-p btn-sm" onclick="newRoleForm()">+ Role ថ្មី</button>
+            </div>
+            <div id="rolesContent"></div>
+          </div>
+          <!-- Right: Edit form -->
+          <div class="card" id="roleEditPanel">
+            <div class="card-hd"><span class="card-title" id="roleFormTitle">✏️ កែ Role</span></div>
+            <div id="roleFormBody">
+              <div class="empty" style="padding:30px 0">
+                <div class="empty-i">👈</div>
+                <p>ចុចប៊ូតុង ✏️ ដើម្បីកែ Role</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-users">
+        <div class="users-grid" id="usersGrid"></div>
+      </div>
+
+
+
+
+      <div id="admin-logs" style="display:none">
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📋 Log សកម្មភាព</span>
+          <button class="btn btn-o btn-sm" onclick="clearLogs()">🗑️ លុប Log</button></div>
+          <div id="logContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div id="page-settings" class="page">
+      <div class="sec-hd"><div class="sec-title">⚙️ ការកំណត់</div></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px">🏢 ព័ត៌មានក្រុមហ៊ុន</div>
+          <div class="form-grid" style="grid-template-columns:1fr">
+            <div class="fg"><label>ឈ្មោះក្រុមហ៊ុន</label><input id="s_company" placeholder="ចម្ការ ABC"></div>
+            <div class="fg"><label>ម្ចាស់</label><input id="s_owner" placeholder="ឈ្មោះ"></div>
+            <div class="fg"><label>ទូរស័ព្ទ</label><input id="s_phone" placeholder="0xx xxx xxx"></div>
+            <div class="fg"><label>ទីតាំង</label><input id="s_loc" placeholder="ខេត្ត/ស្រុក"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-p" onclick="saveSettings()">💾 រក្សាទុក</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px">💱 អត្រាប្តូរប្រាក់</div>
+          <div class="form-grid" style="grid-template-columns:1fr">
+            <div class="fg"><label>USD → KHR (៛)</label><input id="s_rate" type="number" placeholder="4100" value="4100"></div>
+            <div class="fg"><label>ថ្លៃគោល/kg (៛)</label><input id="s_price" type="number" placeholder="2500" value="2500"></div>
+            <div class="fg"><label>ស្តុកអប្បបរមា (ជី)</label><input id="s_minStock" type="number" placeholder="100"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-p" onclick="saveSettings()">💾 រក្សាទុក</button></div>
+          <hr class="divider">
+          <div style="color:var(--danger);font-size:12px;font-weight:700;margin-bottom:8px">⚠️ Danger Zone</div>
+          <button class="btn btn-d" onclick="clearAll()">🗑️ លុបទិន្នន័យទាំងអស់</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+  <div id="sb-tooltip"></div>
+
+<!-- Import Modal -->
+<div class="modal-ov" id="mImport">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hd">
+      <span class="modal-title">📤 Import ទិន្នន័យ</span>
+      <button class="modal-close" onclick="closeModal('mImport')">✕</button>
+    </div>
+
+    <!-- Method 1: File picker -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">📁 វិធី ១ — ជ្រើសរើស File</div>
+      <label style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;border:2px dashed var(--border);border-radius:var(--radius-s);cursor:pointer;background:var(--bg);transition:border-color .2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <input type="file" id="impFile2" accept=".json,.txt,application/json,text/plain,*/*" style="display:none" onchange="importFromFile(event)">
+        <span style="font-size:24px">📂</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--primary)">ចុចដើម្បីជ្រើស File JSON</div>
+          <div style="font-size:11px;color:var(--text3)">ទទួលយក .json ឬ .txt</div>
+        </div>
+      </label>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
+      <hr style="flex:1;border:none;border-top:1px solid var(--border)">
+      <span style="font-size:11px;color:var(--text3);font-weight:600">ឬ</span>
+      <hr style="flex:1;border:none;border-top:1px solid var(--border)">
+    </div>
+
+    <!-- Method 2: Paste JSON text -->
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">📋 វិធី ២ — Paste JSON Text</div>
+      <textarea id="imp_paste" rows="6" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-family:monospace;font-size:11px;resize:vertical;outline:none" placeholder="Paste JSON content នៅទីនេះ..."></textarea>
+      <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="importFromPaste()">📥 Import ពី Text</button>
+    </div>
+
+    <div style="margin-top:14px;padding:10px 12px;background:var(--warn-l);border-radius:var(--radius-xs);font-size:11px;color:var(--warn)">
+      ⚠️ Import នឹង <strong>replace</strong> ទិន្នន័យបច្ចុប្បន្ន។ សូម Export backup មុន!
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Add/Edit User Modal -->
+<div class="modal-ov" id="mAddUser">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">👤 បន្ថែម / កែអ្នកប្រើ</span><button class="modal-close" onclick="closeModal('mAddUser')">✕</button></div>
+    <input type="hidden" id="u_id">
+    <div class="form-grid">
+      <div class="fg"><label>ឈ្មោះអ្នកប្រើ*</label><input id="u_username" placeholder="username"></div>
+      <div class="fg"><label>ឈ្មោះពេញ*</label><input id="u_fullname" placeholder="ឈ្មោះ-នាម"></div>
+      <div class="fg"><label>លេខសម្ងាត់ <span style="color:var(--text3);font-weight:400">(ទុកទទេ=មិនផ្លាស់ប្តូរ)</span></label><input id="u_password" type="password" placeholder="password"></div>
+      <div class="fg"><label>Role / តួនាទី*</label>
+        <select id="u_role">
+          <option value="admin">🔐 Admin</option>
+          <option value="manager">👔 Manager</option>
+          <option value="worker">👷 Worker</option>
+          <option value="viewer">👁️ Viewer</option>
+        </select>
+      </div>
+      <div class="fg"><label>ទូរស័ព្ទ</label><input id="u_phone" placeholder="0xx xxx xxx"></div>
+      <div class="fg"><label>ស្ថានភាព</label>
+        <select id="u_status"><option value="active">✅ សកម្ម</option><option value="inactive">❌ អសកម្ម</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-p" onclick="saveUser()">💾 រក្សាទុក</button>
+      <button class="btn btn-o" onclick="closeModal('mAddUser')">បោះបង់</button>
+    </div>
+  </div>
+</div>
+
+<!-- Plantation Modal -->
+<div class="modal-ov" id="mPlantation">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">🌳 ចម្ការ</span><button class="modal-close" onclick="closeModal('mPlantation')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ឈ្មោះ*</label><input id="p_name" placeholder="ចម្ការ A"></div>
+      <div class="fg"><label>ខេត្ត</label><input id="p_prov" placeholder="ខេត្ត"></div>
+      <div class="fg"><label>ទំហំ (ha)</label><input id="p_size" type="number" placeholder="10"></div>
+      <div class="fg"><label>ចំនួនដើម</label><input id="p_trees" type="number" placeholder="500"></div>
+      <div class="fg"><label>ស្ថានភាព</label><select id="p_status"><option value="active">សកម្ម</option><option value="inactive">អសកម្ម</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="savePlantation()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mPlantation')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Tree Modal -->
+<div class="modal-ov" id="mTree">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">🌱 ដើមកៅស៊ូ</span><button class="modal-close" onclick="closeModal('mTree')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ចម្ការ</label><select id="t_p"><option value="">--</option></select></div>
+      <div class="fg"><label>ចំនួន</label><input id="t_c" type="number" placeholder="100"></div>
+      <div class="fg"><label>ពូជ</label><input id="t_cl" placeholder="RRIM 600"></div>
+      <div class="fg"><label>ថ្ងៃដាំ</label><input id="t_d" type="date"></div>
+      <div class="fg"><label>ស្ថានភាព</label><select id="t_s"><option value="growing">កំពុងដុះ</option><option value="tapping">កំពុងកាត់</option><option value="replant">ដាំឡើងវិញ</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveTree()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mTree')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal-ov" id="mEmployee">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">👷 បន្ថែម / កែ បុគ្គលិក</span><button class="modal-close" onclick="closeModal('mEmployee')">✕</button></div>
+    <input type="hidden" id="e_id">
+    <div class="form-grid">
+      <div class="fg"><label>ឈ្មោះ*</label><input id="e_name" placeholder="ឈ្មោះ-នាម"></div>
+      <div class="fg"><label>តួនាទី</label>
+        <select id="e_role"><option value="tapper">អ្នកកាត់ជ័រ</option><option value="driver">អ្នកដឹក</option><option value="manager">អ្នកគ្រប់គ្រង</option><option value="other">ផ្សេង</option></select>
+      </div>
+      <div class="fg"><label>ទូរស័ព្ទ</label><input id="e_phone" placeholder="0xx xxx xxx"></div>
+      <div class="fg"><label>ចម្ការ</label><select id="e_plant"><option value="">--</option></select></div>
+    </div>
+
+    <!-- Pay Type Selector -->
+    <div style="margin:14px 0 8px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px">💰 របៀបគណនាប្រាក់ខែ</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <label id="lbl_pay_daily" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid var(--primary);border-radius:var(--radius-s);cursor:pointer;background:var(--primary-l)">
+          <input type="radio" name="e_paytype" id="e_pay_daily" value="daily" checked onchange="togglePayType()">
+          <div><div style="font-weight:600;font-size:12px">📅 ប្រាក់ខែ/ថ្ងៃ</div><div style="font-size:10px;color:var(--text3)">Fixed salary per day</div></div>
+        </label>
+        <label id="lbl_pay_kg" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-s);cursor:pointer">
+          <input type="radio" name="e_paytype" id="e_pay_kg" value="kg" onchange="togglePayType()">
+          <div><div style="font-weight:600;font-size:12px">⚖️ ប្រាក់/kg</div><div style="font-size:10px;color:var(--text3)">Pay per kg collected</div></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Pay Rate Fields -->
+    <div class="form-grid" style="margin-top:4px">
+      <div class="fg" id="row_daily"><label>ប្រាក់/ថ្ងៃ (៛)*</label><input id="e_daily" type="number" placeholder="40000" min="0"></div>
+      <div class="fg" id="row_kg" style="display:none"><label>ប្រាក់/kg (៛)*</label><input id="e_perkg" type="number" placeholder="200" min="0"></div>
+    </div>
+
+    <div class="form-actions"><button class="btn btn-p" onclick="saveEmployee()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mEmployee')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Buyer Modal -->
+<div class="modal-ov" id="mBuyer">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">🚛 អ្នកទិញ</span><button class="modal-close" onclick="closeModal('mBuyer')">✕</button></div>
+    <input type="hidden" id="b_id">
+    <div class="form-grid">
+      <div class="fg"><label>ឈ្មោះ*</label><input id="b_name" placeholder="ឈ្មោះ"></div>
+      <div class="fg"><label>ប្រភេទ</label><select id="b_type"><option value="buyer">អ្នកទិញ</option><option value="supplier">ផ្គត់ផ្គង់</option><option value="both">ទាំងពីរ</option></select></div>
+      <div class="fg"><label>ទូរស័ព្ទ</label><input id="b_phone" placeholder="0xx xxx xxx"></div>
+      <div class="fg"><label>ទីតាំង</label><input id="b_loc" placeholder="ខេត្ត"></div>
+      <div class="fg"><label>ថ្លៃ/kg (៛)</label><input id="b_price" type="number" placeholder="2500"></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveBuyer()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mBuyer')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Tapping Modal -->
+<div class="modal-ov" id="mTapping">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">🪓 កត់ត្រាជ័រ</span><button class="modal-close" onclick="closeModal('mTapping')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="tap_d" type="date"></div>
+      <div class="fg"><label>ចម្ការ</label><select id="tap_p"><option value="">--</option></select></div>
+      <div class="fg"><label>កម្មករ</label><select id="tap_w" onchange="onTapWorkerChange()"><option value="">--</option></select></div>
+      <div class="fg"><label>kg*</label><input id="tap_k" type="number" step="0.1" placeholder="50"></div>
+      <div class="fg"><label>គុណភាព</label><select id="tap_q"><option value="A">A ល្អ</option><option value="B">B មធ្យម</option><option value="C">C ទាប</option></select></div>
+      <div class="fg"><label>ប្រភេទ</label><select id="tap_t"><option value="latex">Latex</option><option value="sheet">Sheet</option></select></div>
+    </div>
+    <div class="fg full-col" style="margin-top:8px"><label>ចំណាំ</label><textarea id="tap_n" placeholder="..."></textarea></div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveTapping()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mTapping')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal-ov" id="mAttendance">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">📅 វត្តមាន</span><button class="modal-close" onclick="closeModal('mAttendance')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="a_d" type="date"></div>
+      <div class="fg"><label>បុគ្គលិក*</label><select id="a_e"><option value="">--</option></select></div>
+      <div class="fg"><label>ស្ថានភាព</label><select id="a_s"><option value="present">មកធ្វើ</option><option value="absent">អវត្តមាន</option><option value="sick">ឈឺ</option><option value="leave">ច្បាប់</option></select></div>
+      <div class="fg"><label>ម៉ោងចូល</label><input id="a_in" type="time" value="07:00"></div>
+      <div class="fg"><label>ម៉ោងចេញ</label><input id="a_out" type="time" value="17:00"></div>
+      <div class="fg"><label>Bonus (៛)</label><input id="a_bon" type="number" placeholder="0"></div>
+      <div class="fg"><label>Penalty (៛)</label><input id="a_pen" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveAttendance()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mAttendance')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- StockIn Modal -->
+<div class="modal-ov" id="mStockIn">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">📦 ចូលស្តុក</span><button class="modal-close" onclick="closeModal('mStockIn')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="si_d" type="date"></div>
+      <div class="fg"><label>ប្រភេទ</label><select id="si_cat"><option value="fertilizer">ជី</option><option value="chemical">ថ្នាំ</option><option value="tool">ឧបករណ៍</option><option value="fuel">Fuel</option><option value="other">ផ្សេង</option></select></div>
+      <div class="fg"><label>ឈ្មោះ*</label><input id="si_name" placeholder="ឈ្មោះ"></div>
+      <div class="fg"><label>ឯកតា</label><input id="si_unit" placeholder="kg, L, ដប"></div>
+      <div class="fg"><label>បរិមាណ*</label><input id="si_qty" type="number" step="0.1" placeholder="100"></div>
+      <div class="fg"><label>ថ្លៃ (៛)</label><input id="si_price" type="number" placeholder="200000"></div>
+      <div class="fg"><label>Min ស្តុក</label><input id="si_min" type="number" placeholder="20"></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveStockIn()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mStockIn')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- StockOut Modal -->
+<div class="modal-ov" id="mStockOut">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">📤 ចេញស្តុក</span><button class="modal-close" onclick="closeModal('mStockOut')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="so_d" type="date"></div>
+      <div class="fg"><label>មុខទំនិញ*</label><select id="so_item"><option value="">--</option></select></div>
+      <div class="fg"><label>បរិមាណ*</label><input id="so_qty" type="number" step="0.1" placeholder="10"></div>
+    </div>
+    <div class="fg" style="margin-top:8px"><label>ចំណាំ</label><textarea id="so_note" placeholder="..."></textarea></div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveStockOut()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mStockOut')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Transport Modal -->
+<div class="modal-ov" id="mTransport">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">🚚 ដឹកជញ្ជូន</span><button class="modal-close" onclick="closeModal('mTransport')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="tr_d" type="date"></div>
+      <div class="fg"><label>ប្រភព</label><input id="tr_fr" placeholder="ចម្ការ"></div>
+      <div class="fg"><label>គោលដៅ</label><input id="tr_to" placeholder="រោងចក្រ"></div>
+      <div class="fg"><label>ស្លាករថយន្ត</label><input id="tr_v" placeholder="ស. 1234"></div>
+      <div class="fg"><label>អ្នកបើក</label><select id="tr_dr"><option value="">--</option></select></div>
+      <div class="fg"><label>kg*</label><input id="tr_kg" type="number" placeholder="1000"></div>
+      <div class="fg"><label>ថ្លៃដឹក (៛)</label><input id="tr_cost" type="number" placeholder="80000"></div>
+      <div class="fg"><label>ស្ថានភាព</label><select id="tr_st"><option value="transit">កំពុងដឹក</option><option value="delivered">ដល់ហើយ</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveTransport()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mTransport')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Sale Modal -->
+<div class="modal-ov" id="mSale">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">💰 ការលក់ជ័រ</span><button class="modal-close" onclick="closeModal('mSale')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="s_d" type="date"></div>
+      <div class="fg"><label>អតិថិជន*</label>
+        <select id="s_b" onchange="onSaleBuyerChange()"><option value="">-- ជ្រើសរើស --</option></select>
+      </div>
+      <div class="fg"><label>ប្រភេទជ័រ</label>
+        <select id="s_t" onchange="onSaleTypeChange()">
+          <option value="latex">🥛 Latex (ទឹក)</option>
+          <option value="sheet">📋 Sheet Rubber</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>ស្តុកដែលមាន</label>
+        <div id="s_stock_info" style="padding:8px 11px;background:var(--primary-l);border-radius:var(--radius-xs);font-size:12px;font-weight:700;color:var(--primary)">-- ជ្រើសប្រភេទ --</div>
+      </div>
+      <div class="fg"><label>kg*</label>
+        <input id="s_kg" type="number" step="0.1" placeholder="0" min="0" oninput="calcSaleTotal()">
+      </div>
+      <div class="fg"><label>ថ្លៃ/kg (៛)*</label>
+        <input id="s_price" type="number" placeholder="2500" min="0" oninput="calcSaleTotal()">
+      </div>
+      <div class="fg"><label>ទូទាត់</label>
+        <select id="s_pay"><option value="paid">✅ ទូទាត់ហើយ</option><option value="partial">⏳ មួយភាគ</option><option value="unpaid">❌ មិនទាន់</option></select>
+      </div>
+    </div>
+    <!-- Sale total preview -->
+    <div id="s_total_preview" style="display:none;margin-top:10px;padding:10px 14px;background:var(--primary-l);border-radius:var(--radius-xs);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--text2)">សរុប</span>
+      <span style="font-size:18px;font-weight:700;color:var(--primary)" id="s_total_val">0 ៛</span>
+    </div>
+    <div class="fg" style="margin-top:10px"><label>ចំណាំ</label><textarea id="s_note" placeholder="..."></textarea></div>
+    <div class="form-actions"><button class="btn btn-p" onclick="saveSale()">💾 រក្សាទុក</button><button class="btn btn-o" onclick="closeModal('mSale')">បោះបង់</button></div>
+  </div>
+</div>
+
+<!-- Expense Modal -->
+<div class="modal-ov" id="mExpense">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-hd">
+      <span class="modal-title">💸 ចំណាយ</span>
+      <button class="modal-close" onclick="closeModal('mExpense')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="fg"><label>ថ្ងៃ*</label><input id="ex_d" type="date"></div>
+      <div class="fg"><label>ប្រភេទ</label>
+        <select id="ex_cat" onchange="onExpenseCatChange()">
+          <option value="labor">💵 ប្រាក់ខែបុគ្គលិក</option>
+          <option value="fertilizer">🌿 ជី/ថ្នាំ</option>
+          <option value="transport">🚚 ដឹក</option>
+          <option value="maintenance">🔧 ថែទាំ</option>
+          <option value="other">📝 ផ្សេង</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Labor Payroll Section (show when category=labor) -->
+    <div id="ex_labor_section" style="margin-top:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:10px">
+        👷 ជ្រើសបុគ្គលិកដើម្បីទូទាត់ប្រាក់ខែ
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius-s);overflow:hidden;border:1px solid var(--border)">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:var(--primary);color:white">
+              <th style="padding:8px 10px;text-align:left;font-weight:600">ឈ្មោះ</th>
+              <th style="padding:8px;text-align:center;font-weight:600">📅 ថ្ងៃ</th>
+              <th style="padding:8px;text-align:center;font-weight:600">⚖️ kg</th>
+              <th style="padding:8px;text-align:center;font-weight:600">Bonus</th>
+              <th style="padding:8px;text-align:center;font-weight:600">Penalty</th>
+              <th style="padding:8px 10px;text-align:right;font-weight:600">ត្រូវទទួល</th>
+              <th style="padding:8px;text-align:center;font-weight:600">ទូទាត់</th>
+            </tr>
+          </thead>
+          <tbody id="ex_labor_body"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 12px;background:var(--primary-l);border-radius:var(--radius-xs)">
+        <div style="font-size:12px;color:var(--text2)">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="ex_select_all" onchange="toggleSelectAllPayroll(this.checked)" style="accent-color:var(--primary);width:14px;height:14px">
+            <span style="font-weight:600">ជ្រើសទាំងអស់</span>
+          </label>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--primary)">
+          សរុប: <span id="ex_labor_total">0 ៛</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Normal expense section (show when category != labor) -->
+    <div id="ex_normal_section" style="display:none;margin-top:14px">
+      <div class="form-grid">
+        <div class="fg"><label>ចំណាំ</label><input id="ex_note" placeholder="ចំណាយសម្រាប់..."></div>
+        <div class="fg"><label>ចំនួន (៛)*</label><input id="ex_amt" type="number" placeholder="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin-top:14px">
+      <button class="btn btn-p" onclick="saveExpense()">💾 ទូទាត់ / រក្សាទុក</button>
+      <button class="btn btn-o" onclick="closeModal('mExpense')">បោះបង់</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Payroll Modal -->
+<div class="modal-ov" id="mPayroll">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-hd"><span class="modal-title">💵 គណនាប្រាក់ខែ</span><button class="modal-close" onclick="closeModal('mPayroll')">✕</button></div>
+    <div class="form-grid">
+      <div class="fg"><label>បុគ្គលិក*</label><select id="py_emp"><option value="">-- ជ្រើសរើស --</option></select></div>
+      <div class="fg"><label>ខែ*</label><input id="py_month" type="month"></div>
+      <div class="fg"><label>ថ្ងៃធ្វើការ</label><input id="py_days" type="number" placeholder="0" min="0" oninput="calcPay()"></div>
+      <div class="fg"><label>kg ប្រមូល</label><input id="py_kg" type="number" placeholder="0" step="0.1" oninput="calcPay()"></div>
+      <div class="fg"><label>Bonus (៛)</label><input id="py_bonus" type="number" placeholder="0" oninput="calcPay()"></div>
+      <div class="fg"><label>Penalty (៛)</label><input id="py_penalty" type="number" placeholder="0" oninput="calcPay()"></div>
+    </div>
+    <div style="background:var(--primary-l);border-radius:var(--radius-s);padding:14px;margin-top:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--text2)">ប្រាក់/ថ្ងៃ × ថ្ងៃ</span>
+        <span style="font-size:12px;font-weight:600" id="py_calc_daily">0 ៛</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--text2)">ប្រាក់/kg × kg</span>
+        <span style="font-size:12px;font-weight:600" id="py_calc_kg">0 ៛</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--text2)">Bonus</span>
+        <span style="font-size:12px;font-weight:600;color:var(--primary)" id="py_calc_bonus">0 ៛</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text2)">Penalty</span>
+        <span style="font-size:12px;font-weight:600;color:var(--danger)" id="py_calc_penalty">0 ៛</span>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:8px;display:flex;justify-content:space-between">
+        <span style="font-size:14px;font-weight:700">សរុបទទួល</span>
+        <span style="font-size:18px;font-weight:700;color:var(--primary)" id="py_total">0 ៛</span>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:12px">
+      <button class="btn btn-p" onclick="savePayroll()">💾 រក្សាទុក</button>
+      <button class="btn btn-o" onclick="closeModal('mPayroll')">បោះបង់</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ==================== MENU DEFINITIONS ====================
+var ALL_MENUS = [
+  {id:'dashboard', icon:'📊', label:'ផ្ទាំងគ្រប់គ្រង',   group:'ទូទៅ',        locked:true},
+  {id:'plantation',icon:'🌳', label:'ព័ត៌មានចម្ការ',     group:'ទិន្នន័យគោល', locked:false},
+  {id:'trees',     icon:'🌱', label:'ដើមកៅស៊ូ',         group:'ទិន្នន័យគោល', locked:false},
+  {id:'employees', icon:'👷', label:'បុគ្គលិក',           group:'ទិន្នន័យគោល', locked:false},
+  {id:'buyers',    icon:'🚛', label:'អ្នកទិញ',            group:'ទិន្នន័យគោល', locked:false},
+  {id:'tapping',   icon:'🪓', label:'កាត់ជ័រ & ប្រមូលផល', group:'ប្រតិបត្តិការ',locked:false},
+  {id:'labor',     icon:'📋', label:'គ្រប់គ្រងកម្មករ',   group:'ប្រតិបត្តិការ',locked:false},
+  {id:'inventory', icon:'📦', label:'ស្តុក',              group:'ប្រតិបត្តិការ',locked:false},
+  {id:'transport', icon:'🚚', label:'ដឹកជញ្ជូន',          group:'ប្រតិបត្តិការ',locked:false},
+  {id:'sales',     icon:'💰', label:'ការលក់',             group:'ហិរញ្ញវត្ថុ',  locked:false},
+  {id:'finance',   icon:'💵', label:'ហិរញ្ញវត្ថុ',        group:'ហិរញ្ញវត្ថុ',  locked:false},
+  {id:'reports',   icon:'📈', label:'របាយការណ៍',          group:'ហិរញ្ញវត្ថុ',  locked:false},
+  {id:'admin',     icon:'🔐', label:'គ្រប់គ្រងអ្នកប្រើ', group:'ប្រព័ន្ធ',     locked:true},
+  {id:'settings',  icon:'⚙️', label:'ការកំណត់',           group:'ប្រព័ន្ធ',     locked:false}
+];
+
+
+// ==================== CORE DATA ====================
+const SK = 'rms_v2';
+let DB = {
+  users: [
+    { id:'u1', username:'admin', password:'admin123', fullname:'Admin', role:'admin', phone:'', status:'active', createdAt:new Date().toISOString() },
+    { id:'u2', username:'manager', password:'mgr123', fullname:'Manager', role:'manager', phone:'', status:'active', createdAt:new Date().toISOString() },
+    { id:'u3', username:'worker', password:'wrk123', fullname:'Worker', role:'worker', phone:'', status:'active', createdAt:new Date().toISOString() }
+  ],
+  permissions: {
+    admin:   { plantation:['view','add','edit','del'], trees:['view','add','edit','del'], employees:['view','add','edit','del'], buyers:['view','add','edit','del'], tapping:['view','add','edit','del'], labor:['view','add','edit','del'], inventory:['view','add','edit','del'], transport:['view','add','edit','del'], sales:['view','add','edit','del'], finance:['view','add','edit','del'], reports:['view'], admin:['view','add','edit','del'], settings:['view','edit'] },
+    manager: { plantation:['view','add','edit'], trees:['view','add','edit'], employees:['view','add'], buyers:['view','add'], tapping:['view','add','edit','del'], labor:['view','add','edit'], inventory:['view','add','edit'], transport:['view','add'], sales:['view','add'], finance:['view'], reports:['view'], admin:[], settings:['view'] },
+    worker:  { plantation:['view'], trees:['view'], employees:[], buyers:[], tapping:['view','add'], labor:['view'], inventory:['view'], transport:[], sales:[], finance:[], reports:[], admin:[], settings:[] },
+    viewer:  { plantation:['view'], trees:['view'], employees:[], buyers:[], tapping:['view'], labor:[], inventory:['view'], transport:['view'], sales:['view'], finance:['view'], reports:['view'], admin:[], settings:[] }
+  },
+  plantations:[], trees:[], employees:[], buyers:[],
+  tapping:[], attendance:[], inventory:[], stockHistory:[],
+  transport:[], sales:[], expenses:[], logs:[],
+  customRoles: [],
+  settings:{ company:'ចម្ការកៅស៊ូ', owner:'', phone:'', location:'', rate:4100, price:2500, minStock:100 }
+};
+
+let CU = null; // current user
+
+function loadDB(){
+  try{
+    const s = localStorage.getItem(SK);
+    if(!s) return;
+    const saved = JSON.parse(s);
+    const defaultPerms = DB.permissions;
+    // Merge top-level (arrays etc) but NOT permissions
+    Object.keys(saved).forEach(function(k){
+      if(k !== 'permissions' && k !== 'menuVisibility') DB[k] = saved[k];
+    });
+    // Deep-merge permissions per role
+    var savedPerms = saved.permissions || {};
+    ['admin','manager','worker','viewer'].forEach(function(role){
+      if(savedPerms[role]){
+        DB.permissions[role] = Object.assign({}, defaultPerms[role]||{}, savedPerms[role]);
+      }
+    });
+    // Safety: admin always has full access to admin + dashboard
+    DB.permissions.admin.admin    = ['view','add','edit','del'];
+    DB.permissions.admin.dashboard= ['view','add','edit','del'];
+    // Load custom roles permissions
+    if(saved.customRoles && saved.permissions){
+      (saved.customRoles||[]).forEach(function(r){
+        if(saved.permissions[r.key]) DB.permissions[r.key] = saved.permissions[r.key];
+      });
+    }
+  }catch(e){ console.warn('loadDB error:', e); }
+}
+function saveDB(){ localStorage.setItem(SK, JSON.stringify(DB)); }
+function gid(){ return Date.now().toString(36)+Math.random().toString(36).substr(2,5); }
+
+// Riel formatter
+function riel(n){ return (n||0).toLocaleString('km-KH')+'៛'; }
+
+function toast(msg, type='g'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  const c={g:'var(--primary)',r:'var(--danger)',a:'var(--gold)',b:'var(--info)'};
+  t.style.background=c[type]||c.g;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ==================== AUTH ====================
+function doLogin(){
+  const u=document.getElementById('li_user').value.trim();
+  const p=document.getElementById('li_pass').value;
+  const err=document.getElementById('loginErr');
+  const user=DB.users.find(x=>x.username===u && x.password===p && x.status==='active');
+  if(!user){ err.style.display='block'; return; }
+  err.style.display='none';
+  CU=user;
+  sessionStorage.setItem('rms_session', user.id);
+  addLog('login','ចូលប្រព័ន្ធ');
+  initApp();
+}
+
+function doLogout(){
+  addLog('logout','ចេញប្រព័ន្ធ');
+  CU=null;
+  sessionStorage.removeItem('rms_session');
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('li_user').value='';
+  document.getElementById('li_pass').value='';
+}
+
+function initApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // Set sidebar user info
+  const colors={admin:'#c8a400',manager:'#1565c0',worker:'#1a6b3a',viewer:'#888'};
+  // Merge custom role colors
+  (DB.customRoles||[]).forEach(function(r){ colors[r.key]=r.color||'#888'; });
+  const av=document.getElementById('sbAvatar');
+  av.textContent=CU.fullname.charAt(0);
+  av.style.background=colors[CU.role]||'#888';
+  document.getElementById('sbName').textContent=CU.fullname;
+  const roleLabel={admin:'Administrator',manager:'Manager',worker:'Worker',viewer:'Viewer'};
+  document.getElementById('sbRole').textContent=roleLabel[CU.role]||CU.role;
+  // Apply nav permissions
+  applyNavPermissions();
+  initSidebar();
+  document.getElementById('topDate').textContent=new Date().toLocaleDateString('km-KH',{year:'numeric',month:'long',day:'numeric'});
+  renderPage('dashboard');
+  // APK/WebView: force correct layout after app init
+  setTimeout(function(){
+    fixMobileStatsGrids();
+    fixWebViewLayout();
+  }, 80);
+}
+
+function can(page, action){
+  action = action || 'view';
+  if(!CU) return false;
+  if(page==='dashboard') return true;
+  if(page==='admin' && CU.role==='admin') return true;
+  var perms = DB.permissions[CU.role] || {};
+  return (perms[page]||[]).indexOf(action) >= 0;
+}
+
+function noAccess(){ toast('🚫 អ្នកគ្មានសិទ្ធិប្រើផ្នែកនេះ','r'); }
+function applyNavPermissions(){
+  if(typeof ALL_MENUS === 'undefined') return;
+  var pageNav={
+    dashboard:"showPage('dashboard',this)",
+    plantation:"showPage('plantation',this)",
+    trees:"showPage('trees',this)",
+    employees:"showPage('employees',this)",
+    buyers:"showPage('buyers',this)",
+    tapping:"showPage('tapping',this)",
+    labor:"showPage('labor',this)",
+    inventory:"showPage('inventory',this)",
+    transport:"showPage('transport',this)",
+    sales:"showPage('sales',this)",
+    finance:"showPage('finance',this)",
+    reports:"showPage('reports',this)",
+    admin:"showPage('admin',this)",
+    settings:"showPage('settings',this)"
+  };
+  Object.keys(pageNav).forEach(function(p){
+    var nav=document.getElementById('nav-'+p);
+    if(!nav) return;
+    if(!can(p)){
+      nav.classList.add('locked');
+      nav.setAttribute('onclick',"noAccess()");
+    } else {
+      nav.classList.remove('locked');
+      nav.setAttribute('onclick', pageNav[p]);
+    }
+  });
+  updateNavGroups();
+}
+
+// ==================== NAVIGATION ====================
+function showPage(page, el){
+  if(!can(page)){
+    toast('🚫 អ្នកគ្មានសិទ្ធិ','r'); return;
+  }
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  var pg=document.getElementById('page-'+page);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  else {
+    var nav=document.getElementById('nav-'+page);
+    if(nav) nav.classList.add('active');
+  }
+  var titles={
+    dashboard:'ផ្ទាំងគ្រប់គ្រង',plantation:'ព័ត៌មានចម្ការ',trees:'ដើមកៅស៊ូ',
+    employees:'បុគ្គលិក',buyers:'អ្នកទិញ',tapping:'កាត់ជ័រ',
+    labor:'គ្រប់គ្រងកម្មករ',inventory:'ស្តុក',transport:'ដឹកជញ្ជូន',
+    sales:'ការលក់',finance:'ហិរញ្ញវត្ថុ',reports:'របាយការណ៍',
+    admin:'គ្រប់គ្រងអ្នកប្រើ',settings:'ការកំណត់'
+  };
+  document.getElementById('pageTitle').textContent=titles[page]||page;
+
+  // ── Scroll to top on every page change (critical for APK/WebView) ──
+  var mainEl = document.getElementById('main');
+  if(mainEl) mainEl.scrollTop = 0;
+  window.scrollTo(0, 0);
+  try{ document.documentElement.scrollTop = 0; }catch(e){}
+
+  // ── Close mobile sidebar if open ──
+  if(window.innerWidth <= 720){
+    closeMobileSidebar();
+  }
+
+  renderPage(page);
+
+  // ── Re-apply layout AFTER render so new DOM elements get sized correctly ──
+  setTimeout(function(){
+    fixMobileStatsGrids();
+    fixWebViewLayout();
+  }, 60);
+}
+
+function stab(el,sec,tab){
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="'+sec+'-"]').forEach(d=>d.style.display='none');
+  const t=document.getElementById(sec+'-'+tab);
+  if(t) t.style.display='';
+}
+
+// ==================== MODALS ====================
+function openModal(id){
+  var m=document.getElementById(id);
+  if(!m) return;
+  // Only clear edit-id if NOT being called from an editXxx() function
+  // (edit functions set the attribute after openModal)
+  m.classList.add('open');
+  populateSelects();
+  populateRoleSelect();
+  document.querySelectorAll('#'+id+' input[type=date]').forEach(d=>{if(!d.value)d.value=new Date().toISOString().split('T')[0]});
+
+  if(id==='mPayroll'){
+    var mo=document.getElementById('py_month');
+    if(mo&&!mo.value) mo.value=new Date().toISOString().substr(0,7);
+    calcPay();
+  }
+  if(id==='mExpense'){
+    var exCat = document.getElementById('ex_cat');
+    if(exCat) exCat.value = 'labor';
+    onExpenseCatChange();
+  }
+  if(id==='mSale'){
+    setTimeout(function(){
+      onSaleTypeChange();
+    }, 50);
+  }
+  // Clear form fields for add modals (not edit — edit functions populate after)
+  if(id==='mPlantation'&&!m.getAttribute('data-edit-id')){
+    m.querySelectorAll('input:not([type=hidden])').forEach(function(el){el.value='';});
+    var ps=m.querySelector('select[id="p_status"]'); if(ps) ps.value='active';
+  }
+  if(id==='mTree'&&!m.getAttribute('data-edit-id')){
+    m.querySelectorAll('input:not([type=hidden])').forEach(function(el){el.value='';});
+  }
+}
+function closeModal(id){
+  var m=document.getElementById(id);
+  if(!m) return;
+  m.classList.remove('open');
+  m.removeAttribute('data-edit-id');
+  // Reset modal titles to defaults
+  var titles={'mPlantation':'🌳 ចម្ការ','mTapping':'🪓 កត់ត្រាជ័រ','mTransport':'🚚 ដឹកជញ្ជូន','mTree':'🌱 ដើម'};
+  if(titles[id]){
+    var t=m.querySelector('.modal-title');
+    if(t) t.textContent=titles[id];
+  }
+}
+
+function populateSelects(){
+  // Payroll employee select
+  var pyEmp = document.getElementById('py_emp');
+  if(pyEmp){ pyEmp.innerHTML='<option value="">-- ជ្រើសរើស --</option>'; DB.employees.forEach(function(e){ pyEmp.innerHTML+='<option value="'+e.id+'">'+e.name+'</option>'; }); }
+  ['t_p','tap_p','e_plant'].forEach(id=>{
+    const s=document.getElementById(id); if(!s) return;
+    s.innerHTML='<option value="">--</option>';
+    DB.plantations.forEach(p=>s.innerHTML+=`<option value="${p.id}">${p.name}</option>`);
+  });
+  const tw=document.getElementById('tap_w');
+  if(tw){ tw.innerHTML='<option value="">--</option>'; DB.employees.forEach(e=>tw.innerHTML+=`<option value="${e.id}">${e.name}</option>`); }
+  const ae=document.getElementById('a_e');
+  if(ae){ ae.innerHTML='<option value="">--</option>'; DB.employees.forEach(e=>ae.innerHTML+=`<option value="${e.id}">${e.name}</option>`); }
+  const trd=document.getElementById('tr_dr');
+  if(trd){ trd.innerHTML='<option value="">--</option>'; DB.employees.filter(e=>e.role==='driver').forEach(e=>trd.innerHTML+=`<option value="${e.id}">${e.name}</option>`); if(trd.options.length===1) DB.employees.forEach(e=>trd.innerHTML+=`<option value="${e.id}">${e.name}</option>`); }
+  const sb=document.getElementById('s_b');
+  if(sb){ sb.innerHTML='<option value="">--</option>'; DB.buyers.forEach(b=>sb.innerHTML+=`<option value="${b.id}">${b.name}</option>`); }
+  const soi=document.getElementById('so_item');
+  if(soi){ soi.innerHTML='<option value="">--</option>'; DB.inventory.forEach(i=>soi.innerHTML+=`<option value="${i.id}">${i.name} (${i.qty} ${i.unit})</option>`); }
+}
+
+// ==================== LOG ====================
+function addLog(action, detail){
+  DB.logs.unshift({ id:gid(), ts:new Date().toISOString(), user: CU?CU.fullname:'system', role: CU?CU.role:'', action, detail });
+  if(DB.logs.length>200) DB.logs=DB.logs.slice(0,200);
+  saveDB();
+}
+function clearLogs(){ if(!confirm('លុប Log?')) return; DB.logs=[]; saveDB(); renderPage('admin'); }
+
+// ==================== SAVES ====================
+function saveUser(){
+  const id=document.getElementById('u_id').value;
+  const username=document.getElementById('u_username').value.trim();
+  const fullname=document.getElementById('u_fullname').value.trim();
+  const pass=document.getElementById('u_password').value;
+  if(!username||!fullname){ toast('⚠️ បំពេញព័ត៌មានចាំបាច់','r'); return; }
+  if(!id && DB.users.find(u=>u.username===username)){ toast('⚠️ Username មានរួចហើយ','r'); return; }
+  if(id){
+    const u=DB.users.find(x=>x.id===id);
+    u.username=username; u.fullname=fullname; u.role=document.getElementById('u_role').value;
+    u.phone=document.getElementById('u_phone').value; u.status=document.getElementById('u_status').value;
+    if(pass) u.password=pass;
+    addLog('edit_user','កែអ្នកប្រើ: '+username);
+  } else {
+    if(!pass){ toast('⚠️ ត្រូវបញ្ចូលលេខសម្ងាត់','r'); return; }
+    DB.users.push({ id:gid(), username, fullname, password:pass, role:document.getElementById('u_role').value, phone:document.getElementById('u_phone').value, status:document.getElementById('u_status').value, createdAt:new Date().toISOString() });
+    addLog('add_user','បន្ថែមអ្នកប្រើ: '+username);
+  }
+  saveDB(); closeModal('mAddUser'); renderPage('admin'); applyNavPermissions();
+  toast('✅ រក្សាទុកបាន!');
+}
+
+function editUser(id){
+  const u=DB.users.find(x=>x.id===id);
+  if(!u) return;
+  document.getElementById('u_id').value=u.id;
+  document.getElementById('u_username').value=u.username;
+  document.getElementById('u_fullname').value=u.fullname;
+  document.getElementById('u_password').value='';
+  document.getElementById('u_role').value=u.role;
+  document.getElementById('u_phone').value=u.phone||'';
+  document.getElementById('u_status').value=u.status;
+  openModal('mAddUser');
+}
+
+function deleteUser(id){
+  if(id===CU.id){ toast('🚫 មិនអាចលុបខ្លួនឯងបានទេ','r'); return; }
+  if(!confirm('លុបអ្នកប្រើ?')) return;
+  DB.users=DB.users.filter(u=>u.id!==id);
+  addLog('del_user','លុបអ្នកប្រើ id:'+id);
+  saveDB(); renderPage('admin'); toast('🗑️ លុបបានជោគជ័យ','a');
+}
+
+// savePermissions merged into saveMenuVis
+
+function savePlantation(){
+  const name=document.getElementById('p_name').value.trim();
+  if(!name){ toast('⚠️ ឈ្មោះចម្ការ!','r'); return; }
+  const modal=document.getElementById('mPlantation');
+  const editId=modal.getAttribute('data-edit-id');
+  const obj={ id:editId||gid(), name, province:document.getElementById('p_prov').value, gps:document.getElementById('p_gps').value, size:parseFloat(document.getElementById('p_size').value)||0, treeCount:parseInt(document.getElementById('p_trees').value)||0, blocks:parseInt(document.getElementById('p_blocks').value)||0, status:document.getElementById('p_status').value };
+  if(editId){
+    var idx=DB.plantations.findIndex(x=>x.id===editId);
+    if(idx>=0) DB.plantations[idx]=obj;
+    addLog('edit','កែចម្ការ: '+name);
+    toast('✅ កែចម្ការបានជោគជ័យ!');
+  } else {
+    DB.plantations.push(obj);
+    addLog('add','បន្ថែមចម្ការ: '+name);
+    toast('✅ បានបន្ថែម!');
+  }
+  modal.removeAttribute('data-edit-id');
+  document.querySelector('#mPlantation .modal-title').textContent='🌳 ចម្ការ';
+  saveDB(); closeModal('mPlantation'); renderPage('plantation');
+}
+
+function saveTree(){
+  const modal=document.getElementById('mTree');
+  const editId=modal.getAttribute('data-edit-id');
+  const obj={ id:editId||gid(), plantationId:document.getElementById('t_p').value, block:document.getElementById('t_b').value, count:parseInt(document.getElementById('t_c').value)||0, clone:document.getElementById('t_cl').value, planted:document.getElementById('t_d').value, status:document.getElementById('t_s').value };
+  if(editId){
+    var idx=DB.trees.findIndex(x=>x.id===editId);
+    if(idx>=0) DB.trees[idx]=obj;
+    addLog('edit','កែដើម');
+    toast('✅ កែបានជោគជ័យ!');
+  } else {
+    DB.trees.push(obj);
+    addLog('add','បន្ថែមដើម');
+    toast('✅ បានបន្ថែម!');
+  }
+  modal.removeAttribute('data-edit-id');
+  var t=modal.querySelector('.modal-title'); if(t) t.textContent='🌱 ដើម';
+  saveDB(); closeModal('mTree'); renderPage('trees');
+}
+
+function saveEmployee(){
+  var id = document.getElementById('e_id').value;
+  var payType = document.querySelector('input[name="e_paytype"]:checked');
+  var pt = payType ? payType.value : 'daily';
+  var obj = {
+    id: id||gid(),
+    name: document.getElementById('e_name').value.trim(),
+    role: document.getElementById('e_role').value,
+    phone: document.getElementById('e_phone').value,
+    payType: pt,
+    dailyRate: pt==='daily' ? (parseFloat(document.getElementById('e_daily').value)||0) : 0,
+    perKgRate: pt==='kg'    ? (parseFloat(document.getElementById('e_perkg').value)||0) : 0,
+    plantationId: document.getElementById('e_plant').value
+  };
+  if(!obj.name){ toast('⚠️ ឈ្មោះ!','r'); return; }
+  if(id){ var i=DB.employees.findIndex(function(x){return x.id===id;}); if(i>=0) DB.employees[i]=obj; } else DB.employees.push(obj);
+  addLog('add','រក្សាបុគ្គលិក: '+obj.name);
+  saveDB(); closeModal('mEmployee'); renderPage('employees'); toast('✅ បានរក្សា!');
+}
+
+function saveBuyer(){
+  const id=document.getElementById('b_id').value;
+  const existingBuyer = id ? DB.buyers.find(x=>x.id===id) : null;
+  const obj={ id:id||gid(), name:document.getElementById('b_name').value.trim(), type:document.getElementById('b_type').value, phone:document.getElementById('b_phone').value, location:document.getElementById('b_loc').value, pricePerKg:parseFloat(document.getElementById('b_price').value)||0, debt:existingBuyer ? (existingBuyer.debt||0) : 0 };
+  if(!obj.name){ toast('⚠️ ឈ្មោះ!','r'); return; }
+  if(id){ const i=DB.buyers.findIndex(x=>x.id===id); DB.buyers[i]=obj; } else DB.buyers.push(obj);
+  addLog('add','រក្សាអ្នកទិញ: '+obj.name);
+  saveDB(); closeModal('mBuyer'); renderPage('buyers'); toast('✅ បានរក្សា!');
+}
+
+function saveTapping(){
+  var kg  = parseFloat(document.getElementById('tap_k').value);
+  if(!kg){ toast('⚠️ បញ្ចូល kg!','r'); return; }
+  var pid    = document.getElementById('tap_p').value;
+  var wid    = document.getElementById('tap_w').value;
+  var date   = document.getElementById('tap_d').value;
+  var type   = document.getElementById('tap_t').value;
+  var typeLabel = {latex:'Latex (ទឹក)',sheet:'Sheet Rubber',block:'Rubber Block'}[type]||type;
+  var plant  = DB.plantations.find(function(x){return x.id===pid;});
+  var worker = DB.employees.find(function(x){return x.id===wid;});
+  var modal  = document.getElementById('mTapping');
+  var editId = modal.getAttribute('data-edit-id');
+
+  if(editId){
+    // Edit mode: update record, do NOT touch stock (to avoid double-counting)
+    var idx=DB.tapping.findIndex(function(x){return x.id===editId;});
+    if(idx>=0){
+      var oldRec=DB.tapping[idx];
+      var oldKg=oldRec.kg||0;
+      var oldLabel={latex:'Latex (ទឹក)',sheet:'Sheet Rubber',block:'Rubber Block'}[oldRec.type]||oldRec.type;
+      // Adjust stock: remove old kg, add new kg
+      var oldItem=DB.inventory.find(function(i){return i.name===oldLabel&&i.category==='rubber';});
+      if(oldItem) oldItem.qty=Math.max(0,oldItem.qty-oldKg);
+      var newItem=DB.inventory.find(function(i){return i.name===typeLabel&&i.category==='rubber';});
+      if(newItem){ newItem.qty+=kg; }
+      else { DB.inventory.push({id:gid(),name:typeLabel,category:'rubber',qty:kg,unit:'kg',minQty:0,price:0}); }
+      DB.tapping[idx]=Object.assign({},oldRec,{
+        date:date, plantationId:pid, plantationName:plant?plant.name:oldRec.plantationName,
+        block:document.getElementById('tap_b').value,
+        workerId:wid, workerName:worker?worker.name:oldRec.workerName,
+        kg:kg, quality:document.getElementById('tap_q').value, type:type,
+        note:document.getElementById('tap_n').value
+      });
+      addLog('edit','កែជ័រ '+kg+'kg');
+      toast('✅ កែបានជោគជ័យ!');
+    }
+    modal.removeAttribute('data-edit-id');
+    document.querySelector('#mTapping .modal-title').textContent='🪓 កត់ត្រាជ័រ';
+    saveDB(); closeModal('mTapping'); renderPage('tapping');
+    return;
+  }
+
+  // ── Save tapping record ──
+  var rec = { id:gid(), date:date,
+    plantationId:pid, plantationName:plant?plant.name:'',
+    block:document.getElementById('tap_b').value,
+    workerId:wid, workerName:worker?worker.name:'',
+    kg:kg, quality:document.getElementById('tap_q').value,
+    type:type, note:document.getElementById('tap_n').value };
+  DB.tapping.push(rec);
+
+  // ── Auto Attendance: mark worker present if not already recorded today ──
+  if(wid && worker){
+    var alreadyAtt = DB.attendance.find(function(a){
+      return a.employeeId===wid && a.date===date && !a.paid;
+    });
+    if(!alreadyAtt){
+      DB.attendance.push({
+        id:gid(), date:date,
+        employeeId:wid, employeeName:worker.name,
+        status:'present',
+        timeIn:'07:00', timeOut:'17:00',
+        bonus:0, penalty:0,
+        auto:true  // flag: auto-created from tapping
+      });
+      addLog('add','វត្តមានស្វ័យប្រវត្តិ: '+worker.name+' ('+date+')');
+    }
+  }
+
+  // ── Auto Stock-In: add rubber to inventory ──
+  var stockName = typeLabel;
+  var item = DB.inventory.find(function(i){ return i.name===stockName && i.category==='rubber'; });
+  if(item){
+    item.qty += kg;
+  } else {
+    DB.inventory.push({ id:gid(), name:stockName, category:'rubber', qty:kg, unit:'kg', minQty:0, price:0 });
+  }
+  DB.stockHistory.push({ id:gid(), date:date, name:stockName, type:'in', qty:kg,
+    note:'ប្រមូលពី: '+(plant?plant.name:'')+(worker?' · '+worker.name:''), auto:true });
+
+  addLog('add','កត់ជ័រ '+kg+'kg → ស្តុក '+stockName);
+  saveDB(); closeModal('mTapping'); renderPage('tapping');
+  toast('✅ '+kg+' kg បានកត់'+(wid&&worker?' + វត្តមាន '+worker.name+' AUTO':'')+'!');
+}
+
+function saveAttendance(){
+  const eid=document.getElementById('a_e').value;
+  DB.attendance.push({ id:gid(), date:document.getElementById('a_d').value, employeeId:eid, employeeName:(DB.employees.find(x=>x.id===eid)||{}).name||'', status:document.getElementById('a_s').value, timeIn:document.getElementById('a_in').value, timeOut:document.getElementById('a_out').value, bonus:parseFloat(document.getElementById('a_bon').value)||0, penalty:parseFloat(document.getElementById('a_pen').value)||0 });
+  addLog('add','វត្តមាន');
+  saveDB(); closeModal('mAttendance'); renderPage('labor'); toast('✅ វត្តមានបានកត់!');
+}
+
+function saveStockIn(){
+  const name=document.getElementById('si_name').value.trim();
+  const qty=parseFloat(document.getElementById('si_qty').value)||0;
+  if(!name||!qty){ toast('⚠️ ព័ត៌មានមិនគ្រប់!','r'); return; }
+  let item=DB.inventory.find(i=>i.name===name);
+  if(item){ item.qty+=qty; }
+  else { item={ id:gid(), name, category:document.getElementById('si_cat').value, qty, unit:document.getElementById('si_unit').value||'kg', minQty:parseFloat(document.getElementById('si_min').value)||0, price:parseFloat(document.getElementById('si_price').value)||0 }; DB.inventory.push(item); }
+  DB.stockHistory.push({ id:gid(), date:document.getElementById('si_d').value, name, type:'in', qty });
+  addLog('add','ចូលស្តុក '+name+' '+qty);
+  saveDB(); closeModal('mStockIn'); renderPage('inventory'); toast('✅ ចូលស្តុក!');
+}
+
+function saveStockOut(){
+  const iid=document.getElementById('so_item').value;
+  const qty=parseFloat(document.getElementById('so_qty').value)||0;
+  const item=DB.inventory.find(i=>i.id===iid);
+  if(!item||!qty){ toast('⚠️ ជ្រើសទំនិញ!','r'); return; }
+  if(item.qty<qty){ toast('❌ ស្តុកមិនគ្រប់!','r'); return; }
+  item.qty-=qty;
+  DB.stockHistory.push({ id:gid(), date:document.getElementById('so_d').value, name:item.name, type:'out', qty, note:document.getElementById('so_note').value });
+  addLog('add','ចេញស្តុក '+item.name+' '+qty);
+  saveDB(); closeModal('mStockOut'); renderPage('inventory'); toast('✅ ចេញស្តុក!');
+}
+
+function saveTransport(){
+  const kg=parseFloat(document.getElementById('tr_kg').value)||0;
+  const did=document.getElementById('tr_dr').value;
+  const modal=document.getElementById('mTransport');
+  const editId=modal.getAttribute('data-edit-id');
+  const obj={ id:editId||gid(), date:document.getElementById('tr_d').value, from:document.getElementById('tr_fr').value, to:document.getElementById('tr_to').value, vehicle:document.getElementById('tr_v').value, driverId:did, driverName:(DB.employees.find(x=>x.id===did)||{}).name||'', kg, cost:parseFloat(document.getElementById('tr_cost').value)||0, status:document.getElementById('tr_st').value };
+  if(editId){
+    var idx=DB.transport.findIndex(x=>x.id===editId);
+    if(idx>=0) DB.transport[idx]=obj;
+    addLog('edit','កែការដឹក '+kg+' kg');
+    toast('✅ កែបានជោគជ័យ!');
+    modal.removeAttribute('data-edit-id');
+    document.querySelector('#mTransport .modal-title').textContent='🚚 ដឹកជញ្ជូន';
+  } else {
+    DB.transport.push(obj);
+    addLog('add','ដឹករថយន្ត '+kg+' kg');
+    toast('✅ ការដឹកបានកត់!');
+  }
+  saveDB(); closeModal('mTransport'); renderPage('transport');
+}
+
+function saveSale(){
+  var kg    = parseFloat(document.getElementById('s_kg').value)||0;
+  var price = parseFloat(document.getElementById('s_price').value)||0;
+  var bid   = document.getElementById('s_b').value;
+  var date  = document.getElementById('s_d').value;
+  var type  = document.getElementById('s_t').value;
+  var total = kg * price;
+  var buyer = DB.buyers.find(function(x){return x.id===bid;});
+  var typeLabel = {latex:'Latex (ទឹក)',sheet:'Sheet Rubber',block:'Rubber Block'}[type]||type;
+
+  if(!kg||!price){ toast('⚠️ បំពេញ kg និង ថ្លៃ!','r'); return; }
+
+  // ── Auto Stock-Out: deduct rubber from inventory ──
+  var item = DB.inventory.find(function(i){ return i.name===typeLabel && i.category==='rubber'; });
+  if(item){
+    if(item.qty < kg){
+      if(!confirm('⚠️ ស្តុក '+typeLabel+' មាន '+item.qty.toFixed(1)+' kg ប៉ុណ្ណោះ! បន្តដែរទេ?')) return;
+    }
+    item.qty = Math.max(0, item.qty - kg);
+    DB.stockHistory.push({ id:gid(), date:date, name:typeLabel, type:'out', qty:kg,
+      note:'លក់ឱ្យ: '+(buyer?buyer.name:''), auto:true });
+  } else {
+    toast('⚠️ គ្មានស្តុក '+typeLabel+' — ការលក់ត្រូវបានរក្សា ប៉ុន្តែស្តុកមិនបានដក', 'a');
+  }
+
+  DB.sales.push({ id:gid(),
+    invoice:'INV-'+(((DB.settings.invoiceSeq||0)+1)).toString().padStart(4,'0'),
+    date:date, buyerId:bid, buyerName:buyer?buyer.name:'',
+    type:type, kg:kg, price:price, total:total,
+    payment:document.getElementById('s_pay').value,
+    note:document.getElementById('s_note').value });
+  DB.settings.invoiceSeq = (DB.settings.invoiceSeq||0) + 1;
+
+  addLog('add','លក់ '+kg+'kg '+typeLabel+' = '+riel(total));
+  saveDB(); closeModal('mSale'); renderPage('sales');
+  toast('✅ លក់ '+riel(total)+' → ស្តុកដកចេញ '+kg+'kg');
+}
+
+// ── Expense category change handler ──
+function onExpenseCatChange(){
+  var cat = document.getElementById('ex_cat').value;
+  var isLabor = cat === 'labor';
+  document.getElementById('ex_labor_section').style.display = isLabor ? '' : 'none';
+  document.getElementById('ex_normal_section').style.display = isLabor ? 'none' : '';
+  if(isLabor) buildPayrollTable();
+}
+
+// ── Build payroll table in expense modal ──
+function buildPayrollTable(){
+  var body = document.getElementById('ex_labor_body');
+  var totalEl = document.getElementById('ex_labor_total');
+  if(!body) return;
+
+  if(!DB.employees.length){
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3)">មិនទាន់មានបុគ្គលិក</td></tr>';
+    return;
+  }
+
+  var rows = DB.employees.map(function(e){
+    var pt   = e.payType || 'daily';
+    var days = DB.attendance.filter(function(a){ return a.employeeId===e.id && a.status==='present' && !a.paid; }).length;
+    var kg   = DB.tapping.filter(function(t){ return t.workerId===e.id && !t.paid; }).reduce(function(s,t){ return s+(t.kg||0); },0);
+    var bon  = DB.attendance.filter(function(a){ return a.employeeId===e.id && !a.paid; }).reduce(function(s,a){ return s+(a.bonus||0); },0);
+    var pen  = DB.attendance.filter(function(a){ return a.employeeId===e.id && !a.paid; }).reduce(function(s,a){ return s+(a.penalty||0); },0);
+    var pay  = (pt==='daily' ? days*(e.dailyRate||0) : kg*(e.perKgRate||0)) + bon - pen;
+    return { e:e, pt:pt, days:days, kg:kg, bon:bon, pen:pen, pay:Math.max(0,pay) };
+  });
+
+  var html = '';
+  rows.forEach(function(r){
+    var hasData = r.days > 0 || r.kg > 0 || r.bon > 0;
+    html += '<tr style="border-bottom:1px solid var(--border-l);'+(hasData?'':'opacity:.5')+'">';
+    html += '<td style="padding:8px 10px">';
+    html += '<div style="font-weight:600">'+r.e.name+'</div>';
+    html += '<div style="font-size:10px;color:var(--text3)">'+(r.pt==='kg'?'⚖️ /kg':'📅 /ថ្ងៃ')+'</div></td>';
+    html += '<td style="text-align:center;padding:6px">'+r.days+'</td>';
+    html += '<td style="text-align:center;padding:6px">'+r.kg.toFixed(1)+'</td>';
+    html += '<td style="text-align:center;padding:6px;color:var(--primary)">'+riel(r.bon)+'</td>';
+    html += '<td style="text-align:center;padding:6px;color:var(--danger)">'+riel(r.pen)+'</td>';
+    html += '<td style="text-align:right;padding:8px 10px;font-weight:700;font-size:13px;color:var(--primary)">'+riel(r.pay)+'</td>';
+    html += '<td style="text-align:center;padding:6px">';
+    html += '<input type="checkbox" class="payroll-check" data-empid="'+r.e.id+'" data-pay="'+r.pay+'" ';
+    html += (hasData?'checked':'')+' onchange="updatePayrollTotal()" ';
+    html += 'style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer">';
+    html += '</td></tr>';
+  });
+
+  body.innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3)">មិនទាន់មានទិន្នន័យ</td></tr>';
+  updatePayrollTotal();
+}
+
+function updatePayrollTotal(){
+  var total = 0;
+  document.querySelectorAll('.payroll-check:checked').forEach(function(cb){
+    total += parseFloat(cb.getAttribute('data-pay'))||0;
+  });
+  var el = document.getElementById('ex_labor_total');
+  if(el) el.textContent = riel(total);
+}
+
+function toggleSelectAllPayroll(checked){
+  document.querySelectorAll('.payroll-check').forEach(function(cb){ cb.checked = checked; });
+  updatePayrollTotal();
+}
+
+// ── Save Expense (handles both labor payroll + normal) ──
+function saveExpense(){
+  var cat  = document.getElementById('ex_cat').value;
+  var date = document.getElementById('ex_d').value;
+
+  if(cat === 'labor'){
+    // Payroll mode — save one expense per selected employee + mark as paid
+    var selected = document.querySelectorAll('.payroll-check:checked');
+    if(!selected.length){ toast('⚠️ ជ្រើសបុគ្គលិកយ៉ាងតិច ១ នាក់!','r'); return; }
+
+    var paidCount = 0;
+    var totalPaid = 0;
+
+    selected.forEach(function(cb){
+      var eid = cb.getAttribute('data-empid');
+      var pay = parseFloat(cb.getAttribute('data-pay'))||0;
+      var emp = DB.employees.find(function(e){ return e.id===eid; });
+      if(!emp || pay<=0) return;
+
+      // Save expense record
+      DB.expenses.push({
+        id:gid(), date:date, category:'labor',
+        note:'ប្រាក់ខែ: '+emp.name,
+        amount:pay, employeeId:eid
+      });
+
+      // ── Mark attendance records as paid ──
+      DB.attendance.forEach(function(a){
+        if(a.employeeId===eid && a.status==='present' && !a.paid) a.paid = true;
+      });
+
+      // ── Mark tapping records as paid (ALL types) ──
+      // /kg: paid based on kg, so mark paid to reset kg counter
+      // /ថ្ងៃ: paid based on days, but tapping records also reset to avoid stale kg display
+      DB.tapping.forEach(function(t){
+        if(t.workerId===eid && !t.paid) t.paid = true;
+      });
+
+      addLog('add','ទូទាត់ប្រាក់ខែ '+emp.name+': '+riel(pay));
+      totalPaid += pay;
+      paidCount++;
+    });
+
+    saveDB();
+    closeModal('mExpense');
+    renderPage('finance');
+    toast('✅ ទូទាត់ '+paidCount+' នាក់ = '+riel(totalPaid));
+
+  } else {
+    // Normal expense
+    var amt = parseFloat(document.getElementById('ex_amt').value)||0;
+    var note = document.getElementById('ex_note').value;
+    if(!amt){ toast('⚠️ បញ្ចូលចំនួន!','r'); return; }
+    DB.expenses.push({ id:gid(), date:date, category:cat, note:note, amount:amt });
+    addLog('add','ចំណាយ '+riel(amt));
+    saveDB(); closeModal('mExpense'); renderPage('finance');
+    toast('✅ ចំណាយ '+riel(amt));
+  }
+}
+
+function saveSettings(){
+  DB.settings=Object.assign({}, DB.settings, { company:document.getElementById('s_company').value, owner:document.getElementById('s_owner').value, phone:document.getElementById('s_phone').value, location:document.getElementById('s_loc').value, rate:parseFloat(document.getElementById('s_rate').value)||4100, price:parseFloat(document.getElementById('s_price').value)||2500, minStock:parseFloat(document.getElementById('s_minStock').value)||100 });
+  saveDB(); toast('✅ ការកំណត់បានរក្សា!');
+}
+
+// ==================== DELETE ====================
+function del(type,id,pg){
+  if(!confirm('លុបទិន្នន័យ?')) return;
+  DB[type]=DB[type].filter(r=>r.id!==id);
+  addLog('del','លុប '+type+' id:'+id);
+  saveDB(); toast('🗑️ លុបបាន','a'); renderPage(pg);
+}
+
+// ==================== RENDERS ====================
+function renderPage(page){ const map={dashboard:rDash,plantation:rPlantation,trees:rTrees,employees:rEmployees,buyers:rBuyers,tapping:rTapping,labor:rLabor,inventory:rInventory,transport:rTransport,sales:rSales,finance:rFinance,reports:rReports,admin:rAdmin,settings:rSettings}; if(map[page]) map[page](); setTimeout(fixMobileStatsGrids,80); }
+
+function pname(id){ return (DB.plantations.find(x=>x.id===id)||{}).name||'-'; }
+function ename(id){ return (DB.employees.find(x=>x.id===id)||{}).name||'-'; }
+
+function canBtn(page,act,html){ return can(page,act)?html:''; }
+
+function rDash(){
+  const now=new Date();
+  document.getElementById('wMsg').textContent='🙏 សូមស្វាគមន៍, '+CU.fullname+'!';
+  document.getElementById('wSub').textContent=now.toLocaleDateString('km-KH',{year:'numeric',month:'long',day:'numeric'});
+  const totalKg=DB.tapping.reduce((s,t)=>s+(t.kg||0),0);
+  const totalSale=DB.sales.reduce((s,x)=>s+(x.total||0),0);
+  const unpaidSale=DB.sales.filter(s=>s.payment!=='paid').reduce((s,x)=>s+(x.total||0),0);
+  const lowStock=DB.inventory.filter(i=>i.qty<=(i.minQty||0)&&(i.minQty||0)>0).length;
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">🌳 ចម្ការ</div><div class="stat-val">${DB.plantations.length}</div><div class="stat-sub">${DB.trees.reduce((s,t)=>s+(t.count||0),0).toLocaleString()} ដើម</div></div>
+    <div class="stat g"><div class="stat-lbl">🪓 ជ័រ (kg)</div><div class="stat-val">${totalKg.toFixed(0)}</div><div class="stat-sub">${DB.tapping.length} ដង</div></div>
+    <div class="stat a"><div class="stat-lbl">💰 ចំណូល (៛)</div><div class="stat-val stat-val-sm">${riel(totalSale)}</div><div class="stat-sub stat-sub-danger">រង់ចាំ: ${riel(unpaidSale)}</div></div>
+    <div class="stat b"><div class="stat-lbl">👷 បុគ្គលិក</div><div class="stat-val">${DB.employees.length}</div><div class="stat-sub">${DB.attendance.filter(a=>a.date===new Date().toISOString().split('T')[0]).length} នាក់ថ្ងៃនេះ</div></div>
+    <div class="stat r"><div class="stat-lbl">⚠️ ស្តុក Alert</div><div class="stat-val">${lowStock}</div><div class="stat-sub">ស្ទើរអស់</div></div>
+  `;
+  // 7-day chart
+  const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return d.toISOString().split('T')[0]});
+  const wd=days.map(d=>({lbl:new Date(d+'T00:00:00').toLocaleDateString('km-KH',{weekday:'short'}),kg:DB.tapping.filter(t=>t.date===d).reduce((s,t)=>s+(t.kg||0),0)}));
+  const mx=Math.max(...wd.map(d=>d.kg),1);
+  document.getElementById('wChart').innerHTML=wd.map(d=>`
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100px;justify-content:flex-end;">
+      <div style="font-size:9px;font-weight:700;color:var(--primary);margin-bottom:2px">${d.kg>0?d.kg.toFixed(0):''}</div>
+      <div style="width:75%;background:var(--primary-m);border-radius:3px 3px 0 0;height:${Math.max((d.kg/mx)*70,2)}px;opacity:${d.kg>0?1:.25};transition:height .3s"></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${d.lbl}</div>
+    </div>`).join('');
+  // Recent activity
+  const recent=[...DB.tapping.map(r=>({...r,_type:'tap'})),...DB.sales.map(r=>({...r,_type:'sale'}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
+  document.getElementById('recentAct').innerHTML=recent.length?recent.map(r=>`
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border-l)">
+      <div><div style="font-size:12px;font-weight:600">${r._type==='sale'?'💰 '+(r.invoice||'Sale'):'🪓 '+(r.plantationName||'ចម្ការ')}</div>
+      <div style="font-size:10px;color:var(--text3)">${r.date||''} ${r._type==='tap'&&r.workerName?'· '+r.workerName:r._type==='sale'&&r.buyerName?'· '+r.buyerName:''}</div></div>
+      <div style="font-size:12px;font-weight:700;color:var(--primary)">${r._type==='sale'?riel(r.total||0):(r.kg||0)+' kg'}</div>
+    </div>`).join(''):'<div class="empty"><div class="empty-i">📋</div><p>មិនទាន់មី</p></div>';
+}
+
+function rPlantation(){
+  const canAdd=can('plantation','add'), canDel=can('plantation','del');
+  document.getElementById('btn-add-plantation').style.display=canAdd?'':'none';
+  const q=(document.getElementById('search-plantation')||{}).value||'';
+  const ql=q.toLowerCase();
+  const rows=DB.plantations.filter(p=>!ql||p.name.toLowerCase().includes(ql)||(p.province||'').toLowerCase().includes(ql));
+  document.getElementById('tbPlantation').innerHTML=rows.length?rows.map(p=>`<tr>
+    <td><strong>${p.name}</strong></td><td>${p.province||'-'}</td>
+    <td>${p.size}ha</td><td>${(p.treeCount||0).toLocaleString()}</td>
+    <td><span class="badge ${p.status==='active'?'bg':'bgray'}">${p.status==='active'?'សកម្ម':'អសកម្ម'}</span></td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editPlantation('${p.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('plantations','${p.id}','plantation')" title="លុប">🗑️</button>`:''}
+    </td>
+  </tr>`).join(''):`<tr><td colspan="6"><div class="empty"><div class="empty-i">🌳</div><p>${q?'រកមិនឃើញ':'មិនទាន់មីទិន្នន័យ'}</p></div></td></tr>`;
+}
+function editPlantation(id){
+  var p=DB.plantations.find(x=>x.id===id); if(!p) return;
+  document.getElementById('p_name').value=p.name;
+  document.getElementById('p_prov').value=p.province||'';
+  document.getElementById('p_gps').value=p.gps||'';
+  document.getElementById('p_size').value=p.size||'';
+  document.getElementById('p_trees').value=p.treeCount||'';
+  document.getElementById('p_blocks').value=p.blocks||'';
+  document.getElementById('p_status').value=p.status||'active';
+  // Store edit id on modal
+  document.getElementById('mPlantation').setAttribute('data-edit-id', id);
+  document.querySelector('#mPlantation .modal-title').textContent='🌳 កែចម្ការ';
+  document.getElementById('mPlantation').classList.add('open');
+}
+
+function rTrees(){
+  const canAdd=can('trees','add'), canDel=can('trees','del');
+  document.getElementById('btn-add-trees').style.display=canAdd?'':'none';
+  document.getElementById('tbTrees').innerHTML=DB.trees.length?DB.trees.map(t=>{
+    const age=t.planted?Math.floor((new Date()-new Date(t.planted))/(365.25*24*3600*1000)):'-';
+    const sm={growing:['ba','កំពុងដុះ'],tapping:['bg','កំពុងកាត់'],replant:['br','ដាំឡើងវិញ']};
+    const [c,l]=sm[t.status]||['bgray',t.status];
+    return`<tr><td>${pname(t.plantationId)}</td><td>${t.block||'-'}</td><td>${(t.count||0).toLocaleString()}</td>
+    <td><span class="badge bb">${t.clone||'-'}</span></td><td>${t.planted||'-'}</td><td>${age==='NaN'||isNaN(age)?'-':age+' ឆ្នាំ'}</td>
+    <td><span class="badge ${c}">${l}</span></td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editTree('${t.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('trees','${t.id}','trees')" title="លុប">🗑️</button>`:''}
+    </td></tr>`;
+  }).join(''):'<tr><td colspan="8"><div class="empty"><div class="empty-i">🌱</div><p>-</p></div></td></tr>';
+}
+function editTree(id){
+  var t=DB.trees.find(x=>x.id===id); if(!t) return;
+  openModal('mTree');
+  setTimeout(function(){
+    document.getElementById('t_p').value=t.plantationId||'';
+    document.getElementById('t_b').value=t.block||'';
+    document.getElementById('t_c').value=t.count||'';
+    document.getElementById('t_cl').value=t.clone||'';
+    document.getElementById('t_d').value=t.planted||'';
+    document.getElementById('t_s').value=t.status||'growing';
+    document.getElementById('mTree').setAttribute('data-edit-id',id);
+    document.querySelector('#mTree .modal-title').textContent='🌱 កែដើម';
+  },60);
+}
+
+function rEmployees(){
+  const canAdd=can('employees','add'), canDel=can('employees','del');
+  document.getElementById('btn-add-employees').style.display=canAdd?'':'none';
+  const q=(document.getElementById('search-employees')||{}).value||'';
+  const ql=q.toLowerCase();
+  const rc={tapper:'bg',driver:'bb',manager:'ba',other:'bgray'};
+  const rl={tapper:'អ្នកកាត់',driver:'អ្នកដឹក',manager:'គ្រប់គ្រង',other:'ផ្សេង'};
+  const rows=DB.employees.filter(e=>!ql||e.name.toLowerCase().includes(ql)||(e.phone||'').includes(ql)||(pname(e.plantationId)||'').toLowerCase().includes(ql));
+  document.getElementById('tbEmployees').innerHTML=rows.length?rows.map(e=>`<tr>
+    <td><strong>${e.name}</strong></td>
+    <td><span class="badge ${rc[e.role]||'bgray'}">${rl[e.role]||e.role}</span></td>
+    <td>${e.phone||'-'}</td>
+    <td>${e.payType==='kg'?'<span class="badge bb">⚖️ /kg</span>':'<span class="badge bg">📅 /ថ្ងៃ</span>'}</td>
+    <td>${e.payType==='kg'?riel(e.perKgRate)+'/kg':riel(e.dailyRate)+'/ថ្ងៃ'}</td>
+    <td>${pname(e.plantationId)}</td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editEmp('${e.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('employees','${e.id}','employees')" title="លុប">🗑️</button>`:''}
+    </td></tr>`).join(''):`<tr><td colspan="7"><div class="empty"><div class="empty-i">👷</div><p>${q?'រកមិនឃើញ':'-'}</p></div></td></tr>`;
+}
+function editEmp(id){
+  var e=DB.employees.find(function(x){return x.id===id;});
+  if(!e) return;
+  document.getElementById('e_id').value=e.id;
+  document.getElementById('e_name').value=e.name;
+  document.getElementById('e_role').value=e.role;
+  document.getElementById('e_phone').value=e.phone||'';
+  document.getElementById('e_daily').value=e.dailyRate||'';
+  document.getElementById('e_perkg').value=e.perKgRate||'';
+  var pt = e.payType || (e.perKgRate>0 ? 'kg' : 'daily');
+  document.getElementById('e_pay_daily').checked = (pt==='daily');
+  document.getElementById('e_pay_kg').checked    = (pt==='kg');
+  openModal('mEmployee');
+  setTimeout(function(){
+    document.getElementById('e_plant').value=e.plantationId||'';
+    togglePayType();
+  },60);
+}
+
+function rBuyers(){
+  const canAdd=can('buyers','add'), canDel=can('buyers','del');
+  document.getElementById('btn-add-buyers').style.display=canAdd?'':'none';
+  const q=(document.getElementById('search-buyers')||{}).value||'';
+  const ql=q.toLowerCase();
+  const tl={buyer:'អ្នកទិញ',supplier:'ផ្គត់ផ្គង់',both:'ទាំងពីរ'};
+  const rows=DB.buyers.filter(b=>!ql||b.name.toLowerCase().includes(ql)||(b.phone||'').includes(ql)||(b.location||'').toLowerCase().includes(ql));
+  document.getElementById('tbBuyers').innerHTML=rows.length?rows.map(b=>`<tr>
+    <td><strong>${b.name}</strong></td><td><span class="badge bb">${tl[b.type]||b.type}</span></td>
+    <td>${b.phone||'-'}</td><td>${b.location||'-'}</td><td>${riel(b.pricePerKg)}/kg</td><td>${riel(b.debt||0)}</td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editBuyer('${b.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('buyers','${b.id}','buyers')" title="លុប">🗑️</button>`:''}
+    </td></tr>`).join(''):`<tr><td colspan="7"><div class="empty"><div class="empty-i">🚛</div><p>${q?'រកមិនឃើញ':'-'}</p></div></td></tr>`;
+}
+function editBuyer(id){const b=DB.buyers.find(x=>x.id===id);if(!b)return;document.getElementById('b_id').value=b.id;document.getElementById('b_name').value=b.name;document.getElementById('b_type').value=b.type;document.getElementById('b_phone').value=b.phone||'';document.getElementById('b_loc').value=b.location||'';document.getElementById('b_price').value=b.pricePerKg||'';openModal('mBuyer');}
+
+function rTapping(){
+  const canAdd=can('tapping','add'), canDel=can('tapping','del');
+  document.getElementById('btn-add-tapping').style.display=canAdd?'':'none';
+  const tk=DB.tapping.reduce((s,t)=>s+(t.kg||0),0);
+  const td=new Date().toISOString().split('T')[0];
+  const today=DB.tapping.filter(t=>t.date===td).reduce((s,t)=>s+(t.kg||0),0);
+  document.getElementById('tapStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">⚖️ ជ័រសរុប</div><div class="stat-val">${tk.toFixed(0)} kg</div></div>
+    <div class="stat a"><div class="stat-lbl">📅 ថ្ងៃនេះ</div><div class="stat-val">${today.toFixed(0)} kg</div></div>
+    <div class="stat b"><div class="stat-lbl">📋 ចំនួនដង</div><div class="stat-val">${DB.tapping.length}</div></div>
+  `;
+  const q=(document.getElementById('search-tapping')||{}).value||'';
+  const ql=q.toLowerCase();
+  const typeF=(document.getElementById('filter-tapping-type')||{}).value||'';
+  const qc={A:'bg',B:'ba',C:'br'};
+  const sorted=[...DB.tapping].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const rows=sorted.filter(t=>{
+    if(typeF && t.type!==typeF) return false;
+    if(!ql) return true;
+    return (t.plantationName||'').toLowerCase().includes(ql)||(t.workerName||'').toLowerCase().includes(ql)||(t.block||'').toLowerCase().includes(ql)||(t.date||'').includes(ql);
+  });
+  document.getElementById('tbTapping').innerHTML=rows.length?rows.map(t=>`<tr>
+    <td>${t.date||'-'}</td><td>${t.plantationName||'-'} ${t.block?'/'+t.block:''}</td>
+    <td>${t.workerName||'-'}</td><td><strong>${t.kg} kg</strong></td>
+    <td><span class="badge ${qc[t.quality]||'bgray'}">${t.quality||'-'}</span></td>
+    <td>${t.type||'-'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.note||''}">${t.note||'-'}</td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editTapping('${t.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('tapping','${t.id}','tapping')" title="លុប">🗑️</button>`:''}
+    </td></tr>`).join(''):`<tr><td colspan="8"><div class="empty"><div class="empty-i">🪓</div><p>${q||typeF?'រកមិនឃើញ':'-'}</p></div></td></tr>`;
+}
+function editTapping(id){
+  var t=DB.tapping.find(x=>x.id===id); if(!t) return;
+  document.getElementById('tap_d').value=t.date||'';
+  document.getElementById('tap_k').value=t.kg||'';
+  document.getElementById('tap_q').value=t.quality||'A';
+  document.getElementById('tap_t').value=t.type||'latex';
+  document.getElementById('tap_b').value=t.block||'';
+  document.getElementById('tap_n').value=t.note||'';
+  openModal('mTapping');
+  setTimeout(function(){
+    var ps=document.getElementById('tap_p'); if(ps) ps.value=t.plantationId||'';
+    var ws=document.getElementById('tap_w'); if(ws) ws.value=t.workerId||'';
+  },60);
+  document.getElementById('mTapping').setAttribute('data-edit-id',id);
+  document.querySelector('#mTapping .modal-title').textContent='🪓 កែកត់ជ័រ';
+}
+
+function rLabor(){
+  const canAdd=can('labor','add'), canDel=can('labor','del');
+  document.getElementById('btn-add-labor').style.display=canAdd?'':'none';
+  const sm={present:'bg',absent:'br',sick:'ba',leave:'bb'};
+  const sl={present:'មកធ្វើ',absent:'អវត្ត',sick:'ឈឺ',leave:'ច្បាប់'};
+  const sorted=[...DB.attendance].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('tbAttendance').innerHTML=sorted.length?sorted.map(a=>{
+    var autoTag=a.auto?'<span style="font-size:9px;background:#e8f5ed;color:#135228;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">🪓AUTO</span>':'';
+    var paidTag=a.paid?'<span style="font-size:9px;background:#f0f0f0;color:#888;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">✅ paid</span>':'';
+    return `<tr style="${a.paid?'opacity:.55':''}${a.auto&&!a.paid?';background:var(--primary-l)':''}">
+    <td>${a.date||'-'}</td>
+    <td>${a.employeeName||'-'}${autoTag}${paidTag}</td>
+    <td><span class="badge ${sm[a.status]||'bgray'}">${sl[a.status]||a.status}</span></td>
+    <td>${a.timeIn||'-'}</td><td>${a.timeOut||'-'}</td>
+    <td style="color:var(--primary)">${a.bonus?'+'+riel(a.bonus):'-'}</td>
+    <td style="color:var(--danger)">${a.penalty?'-'+riel(a.penalty):'-'}</td>
+    <td>${canDel&&!a.paid?`<button class="btn-ic" onclick="del('attendance','${a.id}','labor')">🗑️</button>`:''}</td></tr>`;
+  }).join(''):'<tr><td colspan="8"><div class="empty"><div class="empty-i">📅</div><p>-</p></div></td></tr>';
+  // Payroll
+  let h='<div style="padding:8px 0">';
+  DB.employees.forEach(e=>{
+    const pt=e.payType||'daily';
+    const unpaidAtt=DB.attendance.filter(a=>a.employeeId===e.id&&a.status==='present'&&!a.paid);
+    const unpaidTap=DB.tapping.filter(t=>t.workerId===e.id&&!t.paid);
+    const days=unpaidAtt.length;
+    const kg=unpaidTap.reduce((s,t)=>s+(t.kg||0),0);
+    const bon=unpaidAtt.reduce((s,a)=>s+(a.bonus||0),0);
+    const pen=unpaidAtt.reduce((s,a)=>s+(a.penalty||0),0);
+    const pay=Math.max(0,(pt==='daily'?days*(e.dailyRate||0):kg*(e.perKgRate||0))+bon-pen);
+    const isPaidUp=DB.attendance.some(a=>a.employeeId===e.id&&a.paid)&&days===0&&kg===0;
+    h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-l);${isPaidUp?'opacity:.5':''}">
+      <div><strong>${e.name}</strong>
+        <span style="font-size:10px;background:${pt==='kg'?'var(--info-l)':'var(--primary-l)'};color:${pt==='kg'?'var(--info)':'var(--primary)'};padding:1px 6px;border-radius:3px;margin-left:4px">${pt==='kg'?'⚖️/kg':'📅/ថ្ងៃ'}</span>
+        ${isPaidUp?'<span style="font-size:10px;color:#888;margin-left:4px">✅ paid</span>':''}
+        <br><span style="font-size:11px;color:var(--text3)">${days} ថ្ងៃ (unpaid) · ${kg.toFixed(1)} kg (unpaid)</span></div>
+      <div style="text-align:right"><div style="font-size:15px;font-weight:700;color:${pay>0?'var(--primary)':'var(--text3)'}">${riel(pay)}</div>
+      <div style="font-size:10px;color:var(--text3)">+${riel(bon)} / -${riel(pen)}</div></div>
+    </div>`;
+  });
+  h+='</div>';
+  document.getElementById('payContent').innerHTML=DB.employees.length?h:'<div class="empty"><div class="empty-i">💵</div><p>-</p></div>';
+}
+
+function rInventory(){
+  const canAdd=can('inventory','add'), canDel=can('inventory','del');
+  document.getElementById('btn-add-inventory').style.display=canAdd?'':'none';
+  document.getElementById('btn-out-inventory').style.display=canAdd?'':'none';
+  const low=DB.inventory.filter(i=>i.qty<=i.minQty&&i.minQty>0).length;
+  const val=DB.inventory.reduce((s,i)=>s+(i.qty*(i.price||0)),0);
+  var rubSt = getRubberStock();
+  document.getElementById('invStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">🥛 Latex ទឹក</div><div class="stat-val">${rubSt['Latex (ទឹក)'].toFixed(1)} kg</div></div>
+    <div class="stat b"><div class="stat-lbl">📋 Sheet Rubber</div><div class="stat-val">${rubSt['Sheet Rubber'].toFixed(1)} kg</div></div>
+    <div class="stat g"><div class="stat-lbl">📦 ទំនិញ</div><div class="stat-val">${DB.inventory.length}</div></div>
+    <div class="stat r"><div class="stat-lbl">⚠️ ស្ទើរអស់</div><div class="stat-val">${low}</div></div>
+  `;
+  const cc={fertilizer:'bg',chemical:'br',tool:'bb',fuel:'ba',rubber:'bg',other:'bgray'};
+  const cl={fertilizer:'ជី',chemical:'ថ្នាំ',tool:'ឧបករណ៍',fuel:'Fuel',rubber:'ជ័រ',other:'ផ្សេង'};
+  document.getElementById('tbInventory').innerHTML=DB.inventory.length?DB.inventory.map(i=>{
+    const isLow=i.qty<=i.minQty&&i.minQty>0;
+    const isRubber=i.category==='rubber';
+    return`<tr style="${isRubber?'background:var(--primary-l)':''}"><td><strong>${i.name}</strong>${isRubber?' <span class="badge bg" style="font-size:9px">🌳</span>':''}</td>
+    <td><span class="badge ${cc[i.category]||'bgray'}">${cl[i.category]||i.category}</span></td>
+    <td style="font-weight:700;color:${isLow?'var(--danger)':'inherit'}">${i.qty} ${i.unit}</td>
+    <td>${i.unit}</td><td>${i.minQty||'-'}</td><td>${riel(i.price||0)}</td>
+    <td><span class="badge ${isLow?'br':'bg'}">${isLow?'⚠️ ស្ទើរអស់':'✅ គ្រប់'}</span></td>
+    <td>${canDel&&!isRubber?`<button class="btn-ic" onclick="del('inventory','${i.id}','inventory')">🗑️</button>`:''}</td></tr>`;
+  }).join(''):'<tr><td colspan="8"><div class="empty"><div class="empty-i">📦</div><p>-</p></div></td></tr>';
+
+  // Stock history table
+  var histEl = document.getElementById('tbStockHist');
+  if(histEl){
+    var hist = [...DB.stockHistory].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,30);
+    histEl.innerHTML = hist.length ? hist.map(h=>{
+      var isAuto = h.auto ? ' <span style="font-size:9px;background:#e8f5ed;color:#1a6b3a;padding:1px 5px;border-radius:3px;font-weight:700">AUTO</span>' : '';
+      return `<tr>
+        <td>${h.date||'-'}</td>
+        <td>${h.name}${isAuto}</td>
+        <td><span class="badge ${h.type==='in'?'bg':'br'}">${h.type==='in'?'+ ចូល':'- ចេញ'}</span></td>
+        <td style="font-weight:600;color:${h.type==='in'?'var(--primary)':'var(--danger)'}">${h.type==='in'?'+':'-'}${h.qty} kg</td>
+        <td style="font-size:11px;color:var(--text3)">${h.note||'-'}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5"><div class="empty"><p>គ្មានប្រវត្តិ</p></div></td></tr>';
+  }
+}
+
+function rTransport(){
+  const canAdd=can('transport','add'), canDel=can('transport','del');
+  document.getElementById('btn-add-transport').style.display=canAdd?'':'none';
+  const sorted=[...DB.transport].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('tbTransport').innerHTML=sorted.length?sorted.map(t=>`<tr>
+    <td>${t.date||'-'}</td><td>${t.from||'-'}</td><td>${t.to||'-'}</td><td>${t.vehicle||'-'}</td>
+    <td><strong>${t.kg} kg</strong></td><td>${riel(t.cost)}</td>
+    <td><span class="badge ${t.status==='delivered'?'bg':'ba'}">${t.status==='delivered'?'ដល់ហើយ':'កំពុងដឹក'}</span></td>
+    <td style="display:flex;gap:4px">
+      ${canAdd?`<button class="btn-ic" onclick="editTransport('${t.id}')" title="កែ">✏️</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('transport','${t.id}','transport')" title="លុប">🗑️</button>`:''}
+    </td></tr>`).join(''):'<tr><td colspan="8"><div class="empty"><div class="empty-i">🚚</div><p>-</p></div></td></tr>';
+}
+function editTransport(id){
+  var t=DB.transport.find(x=>x.id===id); if(!t) return;
+  document.getElementById('tr_d').value=t.date||'';
+  document.getElementById('tr_fr').value=t.from||'';
+  document.getElementById('tr_to').value=t.to||'';
+  document.getElementById('tr_v').value=t.vehicle||'';
+  document.getElementById('tr_kg').value=t.kg||'';
+  document.getElementById('tr_cost').value=t.cost||'';
+  document.getElementById('tr_st').value=t.status||'transit';
+  openModal('mTransport');
+  setTimeout(function(){ var d=document.getElementById('tr_dr'); if(d) d.value=t.driverId||''; },60);
+  document.getElementById('mTransport').setAttribute('data-edit-id',id);
+  document.querySelector('#mTransport .modal-title').textContent='🚚 កែការដឹក';
+}
+
+function rSales(){
+  const canAdd=can('sales','add'), canDel=can('sales','del');
+  document.getElementById('btn-add-sales').style.display=canAdd?'':'none';
+  const tot=DB.sales.reduce((s,x)=>s+(x.total||0),0);
+  const unp=DB.sales.filter(s=>s.payment!=='paid').reduce((s,x)=>s+(x.total||0),0);
+  const kg=DB.sales.reduce((s,x)=>s+(x.kg||0),0);
+  document.getElementById('saleStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">💰 ចំណូល(៛)</div><div class="stat-val stat-val-sm">${riel(tot)}</div></div>
+    <div class="stat r"><div class="stat-lbl">📋 មិនទាន់ (៛)</div><div class="stat-val stat-val-sm">${riel(unp)}</div></div>
+    <div class="stat b"><div class="stat-lbl">⚖️ kg លក់</div><div class="stat-val">${kg.toFixed(0)}</div></div>
+    <div class="stat a"><div class="stat-lbl">📄 Invoice</div><div class="stat-val">${DB.sales.length}</div></div>
+  `;
+  const pm={paid:['bg','ទូទាត់ហើយ'],partial:['ba','មួយភាគ'],unpaid:['br','មិនទាន់']};
+  const payF=(document.getElementById('filter-sales-pay')||{}).value||'';
+  const sorted=[...DB.sales].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const filteredSales=payF?sorted.filter(s=>s.payment===payF):sorted;
+  document.getElementById('tbSales').innerHTML=filteredSales.length?filteredSales.map(s=>{
+    const[c,l]=pm[s.payment]||['bgray',s.payment];
+    return`<tr><td><strong>${s.invoice}</strong></td><td>${s.date||'-'}</td><td>${s.buyerName||'-'}</td>
+    <td>${s.kg}kg</td><td>${riel(s.price)}</td><td><strong>${riel(s.total)}</strong></td>
+    <td><span class="badge ${c}">${l}</span></td>
+    <td style="display:flex;gap:4px">
+      ${canAdd&&s.payment!=='paid'?`<button class="btn-ic" title="ផ្លាស់ទូទាត់" onclick="markSalePaid('${s.id}')">✅</button>`:''}
+      ${canDel?`<button class="btn-ic" onclick="del('sales','${s.id}','sales')" title="លុប">🗑️</button>`:''}
+    </td></tr>`;
+  }).join(''):'<tr><td colspan="8"><div class="empty"><div class="empty-i">💰</div><p>-</p></div></td></tr>';
+}
+function markSalePaid(id){
+  var s=DB.sales.find(x=>x.id===id); if(!s) return;
+  var opts=['paid','partial','unpaid'];
+  var cur=opts.indexOf(s.payment);
+  s.payment=opts[(cur+1)%opts.length];
+  saveDB(); renderPage('sales');
+  toast('✅ ផ្លាស់ស្ថានភាព → '+(s.payment==='paid'?'ទូទាត់ហើយ':s.payment==='partial'?'មួយភាគ':'មិនទាន់'));
+}
+
+function rFinance(){
+  const canAdd=can('finance','add'), canDel=can('finance','del');
+  document.getElementById('btn-add-finance').style.display=canAdd?'':'none';
+  const inc=DB.sales.reduce((s,x)=>s+(x.total||0),0);
+  const exp=DB.expenses.reduce((s,x)=>s+(x.amount||0),0);
+  const pro=inc-exp;
+  document.getElementById('finStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">📈 ចំណូល(៛)</div><div class="stat-val stat-val-sm">${riel(inc)}</div></div>
+    <div class="stat r"><div class="stat-lbl">📉 ចំណាយ(៛)</div><div class="stat-val stat-val-sm">${riel(exp)}</div></div>
+    <div class="stat ${pro>=0?'g':'r'}"><div class="stat-lbl">${pro>=0?'💚 ចំណេញ':'❌ ខាត'}(៛)</div><div class="stat-val stat-val-sm ${pro>=0?'':'stat-val-danger'}">${riel(Math.abs(pro))}</div></div>
+  `;
+  // Chart
+  const cats={labor:'ប្រាក់ខែ',fertilizer:'ជី/ថ្នាំ',transport:'ដឹក',maintenance:'ថែ',other:'ផ្សេង'};
+  const ecat={};
+  DB.expenses.forEach(e=>{ ecat[e.category]=(ecat[e.category]||0)+(e.amount||0); });
+  const mv=Math.max(inc,...Object.values(ecat),1);
+  let ch='<div style="display:flex;gap:8px;align-items:flex-end;height:110px;padding:8px 0 24px">';
+  ch+=`<div style="flex:1.5;display:flex;flex-direction:column;align-items:center;height:110px;justify-content:flex-end"><div style="font-size:9px;font-weight:700;color:var(--primary);margin-bottom:2px">${riel(inc)}</div><div style="width:60%;background:var(--primary-m);border-radius:3px 3px 0 0;height:${Math.max((inc/mv)*80,4)}px"></div><div style="font-size:9px;color:var(--text3);margin-top:3px">ចំណូល</div></div>`;
+  Object.entries(ecat).forEach(([cat,v])=>{
+    ch+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:110px;justify-content:flex-end"><div style="font-size:9px;font-weight:700;color:var(--danger);margin-bottom:2px">${riel(v)}</div><div style="width:60%;background:#e88;border-radius:3px 3px 0 0;height:${Math.max((v/mv)*80,4)}px"></div><div style="font-size:9px;color:var(--text3);margin-top:3px">${cats[cat]||cat}</div></div>`;
+  });
+  ch+='</div>';
+  document.getElementById('finChart').innerHTML=ch;
+  const ec={labor:'ប្រាក់ខែ',fertilizer:'ជី/ថ្នាំ',transport:'ដឹក',maintenance:'ថែ',other:'ផ្សេង'};
+  document.getElementById('tbExpense').innerHTML=DB.expenses.length?[...DB.expenses].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>`<tr>
+    <td>${e.date||'-'}</td><td><span class="badge br">${ec[e.category]||e.category}</span> ${e.note||''}</td>
+    <td style="font-weight:700;color:var(--danger)">${riel(e.amount)}</td>
+    <td>${canDel?`<button class="btn-ic" onclick="del('expenses','${e.id}','finance')">🗑️</button>`:''}</td></tr>`).join(''):'<tr><td colspan="4"><div class="empty"><p>-</p></div></td></tr>';
+}
+
+function rReports(){
+  const tk=DB.tapping.reduce((s,t)=>s+(t.kg||0),0);
+  const tt=DB.trees.reduce((s,t)=>s+(t.count||0),0);
+  const th=DB.plantations.reduce((s,p)=>s+(p.size||0),0);
+  document.getElementById('repYieldStats').innerHTML=`
+    <div class="stat g"><div class="stat-lbl">⚖️ ផលិតផលសរុប</div><div class="stat-val">${tk.toFixed(0)} kg</div></div>
+    <div class="stat b"><div class="stat-lbl">🌳 ផល/ដើម</div><div class="stat-val">${tt>0?(tk/tt).toFixed(2):0} kg</div></div>
+    <div class="stat a"><div class="stat-lbl">🗺️ ផល/ha</div><div class="stat-val">${th>0?(tk/th).toFixed(0):0} kg</div></div>
+    <div class="stat g"><div class="stat-lbl">📅 ខែ Active</div><div class="stat-val">${Object.keys(DB.tapping.reduce((m,t)=>{const k=(t.date||'').substr(0,7);if(k)m[k]=1;return m},{})).length}</div></div>
+  `;
+  const months={};
+  DB.tapping.forEach(t=>{const m=(t.date||'').substr(0,7);if(m)months[m]=(months[m]||0)+(t.kg||0);});
+  const sm=Object.keys(months).sort().slice(-12);
+  const mx=Math.max(...sm.map(m=>months[m]),1);
+  if(!sm.length){
+    document.getElementById('yChart').innerHTML='<div class="empty"><p>មិនទាន់មានទិន្នន័យ</p></div>';
+  } else {
+    var rowH=26, barMaxW=320;
+    var html='<div style="display:flex;flex-direction:column;gap:5px;padding:4px 0">';
+    sm.forEach(function(m){
+      var val=months[m];
+      var bw=Math.max(Math.round((val/mx)*barMaxW),4);
+      var mo=m.substr(5), yr=m.substr(2,2);
+      html+='<div style="display:flex;align-items:center;gap:8px">';
+      html+='<div style="font-size:10px;color:var(--text2);font-weight:600;width:34px;text-align:right;flex-shrink:0">'+mo+'/'+yr+'</div>';
+      html+='<div style="flex:1;background:var(--border-l);border-radius:3px;height:'+rowH+'px;position:relative">';
+      html+='<div style="height:100%;width:'+bw+'px;max-width:100%;background:linear-gradient(to right,var(--primary-d),var(--primary-m));border-radius:3px;display:flex;align-items:center;padding-left:8px;transition:width .3s">';
+      if(bw>50) html+='<span style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap">'+val.toFixed(0)+' kg</span>';
+      html+='</div>';
+      if(bw<=50) html+='<span style="position:absolute;left:'+(bw+6)+'px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--primary);white-space:nowrap">'+val.toFixed(0)+'</span>';
+      html+='</div></div>';
+    });
+    html+='</div>';
+    document.getElementById('yChart').innerHTML=html;
+  }
+  // Labor report
+  let lh='<div class="table-wrap"><table><thead><tr><th>ឈ្មោះ</th><th>ថ្ងៃ</th><th>kg</th><th>ប្រាក់(៛)</th><th>ស្ថានភាព</th></tr></thead><tbody>';
+  DB.employees.forEach(e=>{
+    const d=DB.attendance.filter(a=>a.employeeId===e.id&&a.status==='present').length;
+    const k=DB.tapping.filter(t=>t.workerId===e.id).reduce((s,t)=>s+(t.kg||0),0);
+    const unpaidD=DB.attendance.filter(a=>a.employeeId===e.id&&a.status==='present'&&!a.paid).length;
+    const pay=(d*(e.dailyRate||0))+(k*(e.perKgRate||0));
+    lh+=`<tr><td>${e.name}</td><td>${d} <span style="font-size:10px;color:var(--text3)">(unpaid:${unpaidD})</span></td><td>${k.toFixed(0)}</td><td>${riel(pay)}</td><td><span class="badge ${unpaidD>0?'br':'bg'}">${unpaidD>0?'⏳ unpaid':'✅ paid'}</span></td></tr>`;
+  });
+  lh+='</tbody></table></div>';
+  document.getElementById('repLabContent').innerHTML=DB.employees.length?lh:'<div class="empty"><p>-</p></div>';
+  const inc=DB.sales.reduce((s,x)=>s+(x.total||0),0);
+  const ex=DB.expenses.reduce((s,x)=>s+(x.amount||0),0);
+  const profit=inc-ex;
+  document.getElementById('repFinContent').innerHTML=`
+    <div class="stats-grid">
+      <div class="stat g"><div class="stat-lbl">💰 ចំណូល(៛)</div><div class="stat-val" style="font-size:14px">${riel(inc)}</div></div>
+      <div class="stat r"><div class="stat-lbl">💸 ចំណាយ(៛)</div><div class="stat-val" style="font-size:14px">${riel(ex)}</div></div>
+      <div class="stat ${profit>=0?'g':'r'}"><div class="stat-lbl">📊 ចំណេញ/ខាត(៛)</div><div class="stat-val" style="font-size:14px;color:${profit>=0?'var(--primary)':'var(--danger)'}">${profit<0?'-':''}${riel(Math.abs(profit))}</div></div>
+      <div class="stat b"><div class="stat-lbl">📈 Margin</div><div class="stat-val">${inc>0?((profit/inc)*100).toFixed(1):0}%</div></div>
+    </div>`;
+}
+
+function rAdmin(){
+  if(!CU || CU.role!=='admin'){
+    const pg=document.getElementById('page-admin');
+    if(pg) pg.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;color:var(--text3)"><div style="font-size:52px;margin-bottom:12px">🔒</div><h3 style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:6px">គ្មានសិទ្ធិ</h3><p>Admin ប៉ុណ្ណោះអាចប្រើ</p></div>';
+    return;
+  }
+  // Users grid
+  const rc={admin:'#c8a400',manager:'#1565c0',worker:'#1a6b3a',viewer:'#888'};
+  const rl={admin:'🔐 Admin',manager:'👔 Manager',worker:'👷 Worker',viewer:'👁️ Viewer'};
+  // Merge custom role colors/labels
+  (DB.customRoles||[]).forEach(function(r){ rc[r.key]=r.color||'#888'; rl[r.key]=r.label||r.key; });
+  document.getElementById('usersGrid').innerHTML=DB.users.map(u=>`
+    <div class="user-card">
+      <div class="user-av" style="background:${rc[u.role]||'#888'};color:#fff">${u.fullname.charAt(0)}</div>
+      <div class="user-info">
+        <div class="user-name">${u.fullname}</div>
+        <div class="user-role-badge"><span class="badge" style="background:${rc[u.role]||'#888'}22;color:${rc[u.role]||'#888'};font-size:10px">${rl[u.role]||u.role}</span></div>
+        <div class="user-meta">@${u.username} ${u.phone?'· '+u.phone:''}</div>
+        <div class="user-meta"><span class="badge ${u.status==='active'?'bg':'br'}">${u.status==='active'?'✅ Active':'❌ Inactive'}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="btn btn-o btn-sm" onclick="editUser('${u.id}')">✏️</button>
+        ${u.id===CU.id?'':`<button class="btn-ic" onclick="deleteUser('${u.id}')">🗑️</button>`}
+      </div>
+    </div>`).join('');
+
+  // Logs
+  const lh=DB.logs.slice(0,50).map(l=>{
+    const d=new Date(l.ts);
+    const t=d.toLocaleDateString('km-KH',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('km-KH',{hour:'2-digit',minute:'2-digit'});
+    const ac={login:'bg',logout:'bgray',add:'bb',edit:'ba',del:'br',edit_user:'ba',add_user:'bg',del_user:'br',edit_perm:'bw'};
+    return`<div class="log-entry">
+      <div class="log-dot" style="background:var(--primary)"></div>
+      <div style="flex:1"><span class="badge ${ac[l.action]||'bgray'}" style="margin-right:6px">${l.action}</span>${l.detail}
+      <div style="font-size:10px;color:var(--text3)">${l.user} (${l.role}) · ${t}</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('logContent').innerHTML=DB.logs.length?lh:'<div class="empty"><div class="empty-i">📋</div><p>គ្មាន Log</p></div>';
+}
+
+function rSettings(){
+  const s=DB.settings;
+  document.getElementById('s_company').value=s.company||'';
+  document.getElementById('s_owner').value=s.owner||'';
+  document.getElementById('s_phone').value=s.phone||'';
+  document.getElementById('s_loc').value=s.location||'';
+  document.getElementById('s_rate').value=s.rate||4100;
+  document.getElementById('s_price').value=s.price||2500;
+  document.getElementById('s_minStock').value=s.minStock||100;
+}
+
+// ==================== EXPORT/IMPORT ====================
+function exportData(){
+  var json = JSON.stringify(DB, null, 2);
+  var date = new Date().toISOString().split('T')[0];
+  var filename = 'rms_backup_'+date+'.json';
+  var downloaded = false;
+
+  // Method 1: Clipboard copy (works on all platforms)
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(json).then(function(){
+        toast('📋 Copy ទៅ Clipboard ជោគជ័យ! អាច Paste ក្នុង Import បានហើយ!');
+      }).catch(function(){ /* silent fail */ });
+    }
+  } catch(e){}
+
+  // Method 2: Standard file download
+  try{
+    var blob = new Blob([json], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    downloaded = true;
+  } catch(e1){
+    // Method 3: data URI fallback
+    try{
+      var uri = 'data:application/json;charset=utf-8,'+encodeURIComponent(json);
+      var a2 = document.createElement('a');
+      a2.href = uri; a2.download = filename;
+      document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+      downloaded = true;
+    } catch(e2){}
+  }
+
+  // Method 4: Always show in modal textarea as backup
+  openExportModal(json, filename);
+}
+
+function openExportModal(json, filename){
+  // Reuse import modal to show export data
+  var modal = document.getElementById('mImport');
+  var ta    = document.getElementById('imp_paste');
+  var title = modal.querySelector('.modal-title');
+  if(title) title.textContent = '📥 Export — Copy JSON';
+  if(ta){
+    ta.value = json;
+    ta.placeholder = '';
+  }
+  modal.classList.add('open');
+  // Select all text for easy copy
+  setTimeout(function(){
+    if(ta){ ta.focus(); ta.select(); }
+    // Try clipboard one more time
+    try{
+      if(navigator.clipboard) navigator.clipboard.writeText(json);
+    }catch(e){}
+  }, 200);
+  toast('✅ Export ជោគជ័យ! JSON បង្ហាញខាងក្រោម — Long press → Copy All', 'g');
+}
+
+function openImportModal(){
+  var modal = document.getElementById('mImport');
+  var title = modal.querySelector('.modal-title');
+  if(title) title.textContent = '📤 Import ទិន្នន័យ';
+  document.getElementById('imp_paste').value = '';
+  modal.classList.add('open');
+}
+
+// File input trigger — multiple attempts for Android WebView
+function importData(ev){
+  var f = ev.target.files[0]; if(!f) return;
+  processImportFile(f);
+  ev.target.value='';
+}
+
+function importFromFile(ev){
+  var f = ev.target.files[0]; if(!f) return;
+  processImportFile(f);
+  ev.target.value='';
+}
+
+function processImportFile(f){
+  var r = new FileReader();
+  r.onload = function(e){
+    try{
+      var text = e.target.result;
+      doImport(text);
+    } catch(err){
+      toast('❌ អានFile មិនបាន: '+err.message, 'r');
+    }
+  };
+  r.onerror = function(){ toast('❌ ជំហានអានFile បរាជ័យ!','r'); };
+  try{ r.readAsText(f, 'UTF-8'); }
+  catch(e){ toast('❌ FileReader error: '+e.message,'r'); }
+}
+
+function importFromPaste(){
+  var text = document.getElementById('imp_paste').value.trim();
+  if(!text){ toast('⚠️ Paste JSON ទៅក្នុង textarea ជាមុន!','r'); return; }
+  doImport(text);
+}
+
+function doImport(text){
+  try{
+    // Clean BOM if present
+    text = text.replace(/^﻿/, '');
+    var d = JSON.parse(text);
+    if(!d || typeof d !== 'object') throw new Error('Invalid JSON structure');
+    // Deep-merge like loadDB: merge everything except permissions
+    var defaultPerms = DB.permissions;
+    Object.keys(d).forEach(function(k){
+      if(k !== 'permissions') DB[k] = d[k];
+    });
+    // Deep-merge permissions per role
+    var savedPerms = d.permissions || {};
+    ['admin','manager','worker','viewer'].forEach(function(role){
+      if(savedPerms[role]){
+        DB.permissions[role] = Object.assign({}, defaultPerms[role]||{}, savedPerms[role]);
+      }
+    });
+    DB.permissions.admin.admin    = ['view','add','edit','del'];
+    DB.permissions.admin.dashboard= ['view','add','edit','del'];
+    if(d.customRoles && d.permissions){
+      (d.customRoles||[]).forEach(function(r){
+        if(d.permissions[r.key]) DB.permissions[r.key] = d.permissions[r.key];
+      });
+    }
+    saveDB();
+    closeModal('mImport');
+    if(CU) applyNavPermissions();
+    renderPage('dashboard');
+    toast('✅ Import ជោគជ័យ! ទិន្នន័យបានផ្ទុក!');
+  } catch(err){
+    toast('❌ JSON ខុស: '+err.message, 'r');
+  }
+}
+function clearAll(){
+  if(!confirm('⚠️ លុបទំហំទិន្នន័យទាំងអស់? មិនអាចយកមកវិញ!')) return;
+  const u=DB.users; const p=DB.permissions; const s=DB.settings; const cr=DB.customRoles;
+  Object.keys(DB).forEach(k=>{ if(!['users','permissions','settings','customRoles'].includes(k)) DB[k]=[]; });
+  DB.users=u; DB.permissions=p; DB.settings=s; DB.customRoles=cr;
+  saveDB(); renderPage('dashboard'); toast('🗑️ លុបបានជោគជ័យ','a');
+}
+
+// ══════════════════════════════════════
+// TAPPING MODAL — auto-fill plantation
+// ══════════════════════════════════════
+function onTapWorkerChange(){
+  var wid = document.getElementById('tap_w').value;
+  if(!wid) return;
+  var emp = DB.employees.find(function(e){ return e.id===wid; });
+  if(!emp || !emp.plantationId) return;
+
+  // Auto-fill ចម្ការ
+  var pSel = document.getElementById('tap_p');
+  if(pSel) pSel.value = emp.plantationId;
+
+  // Auto-fill Block — find last block used by this worker
+  var lastTap = [...DB.tapping]
+    .filter(function(t){ return t.workerId===wid && t.block; })
+    .sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); })[0];
+  var blockEl = document.getElementById('tap_b');
+  if(blockEl){
+    if(lastTap && lastTap.block){
+      blockEl.value = lastTap.block;
+    } else {
+      blockEl.value = '';
+      blockEl.focus();
+    }
+  }
+}
+
+
+// ══════════════════════════════════════
+// SALE MODAL — auto-fill + stock info
+// ══════════════════════════════════════
+var RUBBER_LABELS = {
+  latex: 'Latex (ទឹក)',
+  sheet: 'Sheet Rubber',
+  block: 'Rubber Block'
+};
+
+function onSaleTypeChange(){
+  var type = document.getElementById('s_t').value;
+  var label = RUBBER_LABELS[type] || type;
+  // Show stock available
+  var item = DB.inventory.find(function(i){ return i.name===label && i.category==='rubber'; });
+  var qty = item ? item.qty : 0;
+  var stockEl = document.getElementById('s_stock_info');
+  if(stockEl){
+    if(qty > 0){
+      stockEl.textContent = '📦 ស្តុក: ' + qty.toFixed(1) + ' kg';
+      stockEl.style.background = 'var(--primary-l)';
+      stockEl.style.color = 'var(--primary)';
+    } else {
+      stockEl.textContent = '⚠️ គ្មានស្តុក ' + label;
+      stockEl.style.background = 'var(--danger-l)';
+      stockEl.style.color = 'var(--danger)';
+    }
+  }
+  // Auto-fill price from buyer if selected
+  onSaleBuyerChange();
+  calcSaleTotal();
+}
+
+function onSaleBuyerChange(){
+  var bid = document.getElementById('s_b').value;
+  var buyer = DB.buyers.find(function(b){ return b.id===bid; });
+  if(buyer && buyer.pricePerKg > 0){
+    document.getElementById('s_price').value = buyer.pricePerKg;
+  } else {
+    // Fall back to system default price
+    var defPrice = (DB.settings && DB.settings.price) ? DB.settings.price : 2500;
+    document.getElementById('s_price').value = defPrice;
+  }
+  calcSaleTotal();
+}
+
+function calcSaleTotal(){
+  var kg = parseFloat(document.getElementById('s_kg').value) || 0;
+  var price = parseFloat(document.getElementById('s_price').value) || 0;
+  var total = kg * price;
+  var el = document.getElementById('s_total_val');
+  var wrap = document.getElementById('s_total_preview');
+  if(el) el.textContent = riel(total);
+  if(wrap) wrap.style.display = total > 0 ? 'flex' : 'none';
+}
+
+
+// ══════════════════════════════════════
+// EMPLOYEE PAY TYPE TOGGLE
+// ══════════════════════════════════════
+function togglePayType(){
+  var isKg = document.getElementById('e_pay_kg') && document.getElementById('e_pay_kg').checked;
+  var rowDaily = document.getElementById('row_daily');
+  var rowKg    = document.getElementById('row_kg');
+  var lblDaily = document.getElementById('lbl_pay_daily');
+  var lblKg    = document.getElementById('lbl_pay_kg');
+  if(!rowDaily) return;
+  if(isKg){
+    rowDaily.style.display = 'none';
+    rowKg.style.display    = '';
+    if(lblKg)    { lblKg.style.border='2px solid var(--primary)';    lblKg.style.background='var(--primary-l)'; }
+    if(lblDaily) { lblDaily.style.border='1.5px solid var(--border)'; lblDaily.style.background=''; }
+  } else {
+    rowDaily.style.display = '';
+    rowKg.style.display    = 'none';
+    if(lblDaily) { lblDaily.style.border='2px solid var(--primary)'; lblDaily.style.background='var(--primary-l)'; }
+    if(lblKg)    { lblKg.style.border='1.5px solid var(--border)';   lblKg.style.background=''; }
+  }
+}
+
+// ══════════════════════════════════════
+// INVENTORY — show rubber stock badge
+// ══════════════════════════════════════
+function getRubberStock(){
+  var types = ['Latex (ទឹក)','Sheet Rubber','Rubber Block'];
+  var result = {};
+  types.forEach(function(t){
+    var item = DB.inventory.find(function(i){ return i.name===t && i.category==='rubber'; });
+    result[t] = item ? item.qty : 0;
+  });
+  return result;
+}
+
+
+// ══════════════════════════════════════
+// LABOR TAB SWITCH (fix for tab bug)
+// ══════════════════════════════════════
+function switchLaborTab(el, tab){
+  document.querySelectorAll('.tabs .tab').forEach(function(t){
+    if(t.id && t.id.startsWith('tab-labor-')) t.classList.remove('active');
+  });
+  el.classList.add('active');
+  var att = document.getElementById('labor-att');
+  var pay = document.getElementById('labor-pay');
+  if(tab === 'att'){
+    if(att) att.style.display = '';
+    if(pay) pay.style.display = 'none';
+  } else {
+    if(att) att.style.display = 'none';
+    if(pay){ pay.style.display = ''; renderPayroll(); }
+  }
+}
+
+function renderPayroll(){
+  var el = document.getElementById('payContent');
+  if(!el) return;
+  if(!DB.employees.length){
+    el.innerHTML = '<div class="empty"><div class="empty-i">💵</div><p>មិនទាន់មានបុគ្គលិក</p></div>';
+    return;
+  }
+
+  var totalUnpaid = 0;
+  var h = '<div style="padding:4px 0">';
+  h += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  h += '<thead><tr style="background:var(--primary);color:white">';
+  h += '<th style="padding:9px 10px;text-align:left;font-weight:600">ឈ្មោះ</th>';
+  h += '<th style="padding:8px;text-align:center;font-weight:600">📅 ថ្ងៃ(unpaid)</th>';
+  h += '<th style="padding:8px;text-align:center;font-weight:600">⚖️ kg(unpaid)</th>';
+  h += '<th style="padding:8px;text-align:center;font-weight:600">Bonus</th>';
+  h += '<th style="padding:8px;text-align:center;font-weight:600">Penalty</th>';
+  h += '<th style="padding:9px 10px;text-align:right;font-weight:600">ត្រូវទទួល(៛)</th>';
+  h += '<th style="padding:8px;text-align:center;font-weight:600">ស្ថានភាព</th>';
+  h += '</tr></thead><tbody>';
+
+  DB.employees.forEach(function(e){
+    var pt = e.payType || 'daily';
+
+    // ── Only count UNPAID records ──
+    var unpaidAtt = DB.attendance.filter(function(a){
+      return a.employeeId===e.id && a.status==='present' && !a.paid;
+    });
+    var unpaidTap = DB.tapping.filter(function(t){
+      return t.workerId===e.id && !t.paid;
+    });
+
+    var days = unpaidAtt.length;
+    var kg   = unpaidTap.reduce(function(s,t){ return s+(t.kg||0); }, 0);
+    var bon  = unpaidAtt.reduce(function(s,a){ return s+(a.bonus||0); }, 0);
+    var pen  = unpaidAtt.reduce(function(s,a){ return s+(a.penalty||0); }, 0);
+    var pay  = (pt==='daily' ? days*(e.dailyRate||0) : kg*(e.perKgRate||0)) + bon - pen;
+    pay = Math.max(0, pay);
+
+    // ── Paid history (for display) ──
+    var hasPaidHistory = DB.attendance.some(function(a){
+      return a.employeeId===e.id && a.paid;
+    });
+    var isPaidUp = hasPaidHistory && days===0 && kg===0;
+
+    totalUnpaid += pay;
+
+    var rowBg = isPaidUp ? 'background:#f9fdf9' : (pay>0 ? '' : 'background:var(--bg)');
+
+    h += '<tr style="border-bottom:1px solid var(--border-l);'+rowBg+'">';
+
+    // Name + payType badge
+    h += '<td style="padding:9px 10px">';
+    h += '<div style="font-weight:600">'+e.name+'</div>';
+    h += '<div style="font-size:10px;color:var(--text3)">'+(pt==='kg'?'⚖️ /kg':'📅 /ថ្ងៃ')+'</div>';
+    h += '</td>';
+
+    // Days (unpaid only)
+    h += '<td style="padding:8px;text-align:center;font-weight:'+(days>0?'700':'400')+';color:'+(days>0?'var(--text)':'var(--text3)')+'">'+days+'</td>';
+
+    // kg (unpaid only)
+    h += '<td style="padding:8px;text-align:center;font-weight:'+(kg>0?'700':'400')+';color:'+(kg>0?'var(--text)':'var(--text3)')+'">'+kg.toFixed(1)+'</td>';
+
+    // Bonus / Penalty
+    h += '<td style="padding:8px;text-align:center;color:var(--primary)">'+riel(bon)+'</td>';
+    h += '<td style="padding:8px;text-align:center;color:var(--danger)">'+riel(pen)+'</td>';
+
+    // Amount due
+    h += '<td style="padding:9px 10px;text-align:right;font-weight:700;font-size:13px;color:'+(pay>0?'var(--primary)':'var(--text3)')+'">'+riel(pay)+'</td>';
+
+    // Status badge
+    h += '<td style="padding:8px;text-align:center">';
+    if(isPaidUp){
+      h += '<span style="font-size:10px;background:#e8f5ed;color:#135228;padding:3px 8px;border-radius:20px;font-weight:700">✅ សំអាតហើយ</span>';
+    } else if(pay > 0){
+      h += '<span style="font-size:10px;background:#fff8e0;color:#7a5e00;padding:3px 8px;border-radius:20px;font-weight:700">⏳ មិនទាន់</span>';
+    } else {
+      h += '<span style="font-size:10px;background:#f0f0f0;color:#888;padding:3px 8px;border-radius:20px;font-weight:700">— គ្មានទិន្នន័យ</span>';
+    }
+    h += '</td>';
+    h += '</tr>';
+  });
+
+  h += '</tbody></table>';
+
+  // Summary footer
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--primary-l);margin-top:8px;border-radius:var(--radius-s)">';
+  h += '<span style="font-size:12px;color:var(--text2)">💡 ទូទាត់ប្រាក់ខែ → ចូល <strong>ហិរញ្ញ → + ចំណាយ → ប្រាក់ខែ</strong></span>';
+  h += '<span style="font-size:14px;font-weight:700;color:var(--primary)">សរុប unpaid: '+riel(totalUnpaid)+'</span>';
+  h += '</div>';
+  h += '</div>';
+
+  el.innerHTML = h;
+}
+
+// ══════════════════════════════════════
+// PAYROLL MODAL
+// ══════════════════════════════════════
+function calcPay(){
+  var eid = document.getElementById('py_emp').value;
+  var emp = DB.employees.find(function(e){ return e.id===eid; });
+  var days    = parseFloat(document.getElementById('py_days').value)||0;
+  var kg      = parseFloat(document.getElementById('py_kg').value)||0;
+  var bonus   = parseFloat(document.getElementById('py_bonus').value)||0;
+  var penalty = parseFloat(document.getElementById('py_penalty').value)||0;
+  var pt         = emp ? (emp.payType||'daily') : 'daily';
+  var dailyRate  = emp ? (emp.dailyRate||0) : 0;
+  var perKgRate  = emp ? (emp.perKgRate||0) : 0;
+  var calcDaily  = pt==='daily' ? days * dailyRate : 0;
+  var calcKg     = pt==='kg'    ? kg   * perKgRate : 0;
+  var total      = calcDaily + calcKg + bonus - penalty;
+  document.getElementById('py_calc_daily').textContent   = riel(calcDaily);
+  document.getElementById('py_calc_kg').textContent      = riel(calcKg);
+  document.getElementById('py_calc_bonus').textContent   = riel(bonus);
+  document.getElementById('py_calc_penalty').textContent = riel(penalty);
+  document.getElementById('py_total').textContent        = riel(Math.max(0,total));
+}
+
+function savePayroll(){
+  var eid = document.getElementById('py_emp').value;
+  var emp = DB.employees.find(function(e){ return e.id===eid; });
+  if(!emp){ toast('⚠️ ជ្រើសបុគ្គលិក','r'); return; }
+  var month   = document.getElementById('py_month').value;
+  var days    = parseFloat(document.getElementById('py_days').value)||0;
+  var kg      = parseFloat(document.getElementById('py_kg').value)||0;
+  var bonus   = parseFloat(document.getElementById('py_bonus').value)||0;
+  var penalty = parseFloat(document.getElementById('py_penalty').value)||0;
+  var total   = (days*(emp.dailyRate||0)) + (kg*(emp.perKgRate||0)) + bonus - penalty;
+  // Save as expense record
+  DB.expenses.push({
+    id:gid(), date:(month||new Date().toISOString().substr(0,7))+'-01',
+    category:'labor', note:'ប្រាក់ខែ: '+emp.name+' ('+days+'ថ្ងៃ, '+kg+'kg)',
+    amount: Math.max(0, total)
+  });
+  addLog('add','គណនាប្រាក់ខែ: '+emp.name+' = '+riel(total));
+  saveDB();
+  closeModal('mPayroll');
+  renderPayroll();
+  toast('✅ ប្រាក់ខែ '+emp.name+' = '+riel(total));
+}
+
+// Pre-fill payroll modal from employee's actual data
+function openPayrollModal(eid){
+  openModal('mPayroll');
+  setTimeout(function(){
+    var empSel = document.getElementById('py_emp');
+    if(empSel && eid){ empSel.value = eid; }
+    // auto-fill month
+    var mo = document.getElementById('py_month');
+    if(mo && !mo.value) mo.value = new Date().toISOString().substr(0,7);
+    // auto-fill days and kg from attendance/tapping records
+    if(eid){
+      var days = DB.attendance.filter(function(a){ return a.employeeId===eid && a.status==='present'; }).length;
+      var kg   = DB.tapping.filter(function(t){ return t.workerId===eid; }).reduce(function(s,t){ return s+(t.kg||0); },0);
+      document.getElementById('py_days').value = days;
+      document.getElementById('py_kg').value   = kg.toFixed(1);
+      calcPay();
+    }
+  }, 80);
+}
+
+// ══════════════════════════════════════
+// ROLE MANAGEMENT
+// ══════════════════════════════════════
+
+
+
+
+
+
+// ══════════════════════════════════════
+// ROLE MANAGEMENT — clean rewrite
+// ══════════════════════════════════════
+var BUILTIN_ROLES  = ['admin','manager','worker','viewer'];
+var BUILTIN_LABELS = {admin:'🔐 Admin', manager:'👔 Manager', worker:'👷 Worker', viewer:'👁️ Viewer'};
+var BUILTIN_COLORS = {admin:'#c8a400',  manager:'#1565c0',   worker:'#1a6b3a',   viewer:'#888'};
+var ROLE_PAGES     = ['plantation','trees','employees','buyers','tapping','labor','inventory','transport','sales','finance','reports','admin','settings'];
+var ROLE_PAGE_LBL  = {plantation:'🌳 ចម្ការ',trees:'🌱 ដើម',employees:'👷 បុគ្គលិក',buyers:'🚛 អ្នកទិញ',tapping:'🪓 កាត់ជ័រ',labor:'📋 កម្មករ',inventory:'📦 ស្តុក',transport:'🚚 ដឹក',sales:'💰 លក់',finance:'💵 ហិរញ្ញ',reports:'📈 Report',admin:'🔐 Admin',settings:'⚙️ Setting'};
+
+function getAllRoles(){
+  var list = BUILTIN_ROLES.map(function(r){
+    return {key:r, label:BUILTIN_LABELS[r], color:BUILTIN_COLORS[r], builtin:true};
+  });
+  (DB.customRoles||[]).forEach(function(r){ list.push(r); });
+  return list;
+}
+
+function populateRoleSelect(){
+  var sel = document.getElementById('u_role');
+  if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '';
+  getAllRoles().forEach(function(r){
+    var o = document.createElement('option');
+    o.value = r.key; o.textContent = r.label;
+    sel.appendChild(o);
+  });
+  if(cur) sel.value = cur;
+}
+
+// Render left panel: list of all roles
+function rRoles(){
+  var el = document.getElementById('rolesContent');
+  if(!el) return;
+  var roles = getAllRoles();
+  var h = '';
+  roles.forEach(function(r){
+    var pCount = ROLE_PAGES.filter(function(p){
+      return ((DB.permissions[r.key]||{})[p]||[]).indexOf('view') >= 0;
+    }).length;
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-s);border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:border-color .15s" ';
+    h += 'onmouseover="this.style.borderColor=\''+r.color+'\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
+    h += '<div style="width:36px;height:36px;border-radius:50%;background:'+r.color+'22;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+r.label.charAt(0)+'</div>';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-weight:600;font-size:13px">'+r.label+'</div>';
+    h += '<div style="font-size:10px;color:var(--text3)">key: '+r.key+' &nbsp;·&nbsp; ចូលបាន <strong>'+pCount+'</strong> ផ្ទាំង</div>';
+    h += '</div>';
+    h += '<div style="display:flex;gap:5px">';
+    h += '<button class="btn btn-o btn-sm" onclick="loadRoleForm(\''+r.key+'\')" style="border-color:'+r.color+';color:'+r.color+'">✏️ កែ</button>';
+    if(!r.builtin){
+      h += '<button class="btn-ic" onclick="deleteRole(\''+r.key+'\')" title="លុប">🗑️</button>';
+    }
+    h += '</div></div>';
+  });
+  el.innerHTML = h || '<div class="empty"><p>គ្មាន Role</p></div>';
+}
+
+// Load role into right edit form
+function loadRoleForm(key){
+  var isNew   = (key === '__new__');
+  var r       = isNew ? null : getAllRoles().find(function(x){ return x.key===key; });
+  var perms   = key && !isNew ? (DB.permissions[key]||{}) : {};
+  var builtin = r ? r.builtin : false;
+
+  document.getElementById('roleFormTitle').textContent = isNew ? '➕ Role ថ្មី' : '✏️ កែ Role: '+(r?r.label:'');
+
+  // Build form HTML
+  var h = '<div style="display:flex;flex-direction:column;gap:12px">';
+
+  if(!builtin){
+    h += '<div class="fg"><label>Key (English, lowercase)*</label>';
+    h += '<input id="rf_key" value="'+(isNew?'':(r?r.key:''))+'" placeholder="e.g. supervisor" '+((!isNew&&builtin)?'disabled':'')+' style="font-family:monospace"></div>';
+    h += '<div class="fg"><label>ឈ្មោះបង្ហាញ*</label>';
+    h += '<input id="rf_label" value="'+(isNew?'':(r?r.label.replace(/^.\s/,''):''))+'" placeholder="e.g. អ្នកត្រួតពិនិត្យ"></div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    h += '<div class="fg"><label>Icon</label><input id="rf_icon" value="'+(isNew?'👤':(r?r.label.charAt(0):'👤'))+'" maxlength="4" style="font-size:20px;text-align:center"></div>';
+    h += '<div class="fg"><label>ពណ៌</label><input id="rf_color" type="color" value="'+(isNew?'#1565c0':(r?r.color:'#1565c0'))+'" style="height:38px;padding:2px;width:100%"></div>';
+    h += '</div>';
+  } else {
+    h += '<div style="background:var(--gold-l);border-radius:var(--radius-xs);padding:10px 12px;font-size:12px;color:var(--text2)">';
+    h += '<strong>'+r.label+'</strong> — Built-in Role (key/ឈ្មោះ/ពណ៌ fixed)<br>';
+    h += '<span style="font-size:11px;color:var(--text3)">អាចកែ permissions ប៉ុណ្ណោះ</span></div>';
+    h += '<input type="hidden" id="rf_key" value="'+key+'">';
+    h += '<input type="hidden" id="rf_label" value="'+(r?r.label:'')+'">';
+    h += '<input type="hidden" id="rf_icon" value="">';
+    h += '<input type="hidden" id="rf_color" value="'+(r?r.color:'#888')+'">';
+  }
+
+  // Permission toggles — show/hide each page
+  h += '<div>';
+  h += '<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px">🛡️ ផ្ទាំងដែលចូលបាន (View)</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+  ROLE_PAGES.forEach(function(p){
+    var hasView = ((perms[p]||[]).indexOf('view') >= 0);
+    var isForceOn = (p==='dashboard');
+    var dis = isForceOn ? 'disabled' : '';
+    var chk = (hasView || isForceOn) ? 'checked' : '';
+    h += '<label style="display:flex;align-items:center;gap:7px;font-size:12px;padding:6px 8px;border-radius:var(--radius-xs);border:1px solid '+(chk?'var(--primary)':'var(--border-l)')+';cursor:pointer;transition:border-color .15s" ';
+    h += 'onclick="this.style.borderColor=this.querySelector(\'input\').checked?\'var(--primary)\':\' var(--border-l)\'">';
+    h += '<input type="checkbox" id="rp_'+p+'" '+chk+' '+dis+' style="accent-color:var(--primary);width:14px;height:14px">';
+    h += '<span>'+ROLE_PAGE_LBL[p]+'</span></label>';
+  });
+  h += '</div></div>';
+
+  // Save button
+  h += '<div style="display:flex;gap:8px;margin-top:4px">';
+  h += '<button class="btn btn-p" onclick="saveRoleForm(\''+key+'\')">💾 រក្សាទុក</button>';
+  if(!isNew && !builtin){
+    h += '<button class="btn btn-d btn-sm" onclick="deleteRole(\''+key+'\')">🗑️ លុប Role</button>';
+  }
+  h += '<button class="btn btn-o" onclick="cancelRoleForm()">✕ បោះបង់</button>';
+  h += '</div></div>';
+
+  document.getElementById('roleFormBody').innerHTML = h;
+}
+
+function newRoleForm(){
+  loadRoleForm('__new__');
+}
+
+function saveRoleForm(origKey){
+  var isNew = (origKey === '__new__');
+  var key   = (document.getElementById('rf_key').value||'').trim().toLowerCase().replace(/\s+/g,'_');
+  var lbl   = (document.getElementById('rf_label').value||'').trim();
+  var icon  = (document.getElementById('rf_icon').value||'👤').trim();
+  var color = document.getElementById('rf_color').value || '#1565c0';
+
+  if(!key || !lbl){ toast('⚠️ បំពេញ Key និង ឈ្មោះ','r'); return; }
+
+  var isBuiltin = BUILTIN_ROLES.indexOf(origKey) >= 0;
+
+  // If not builtin, handle key rename or new
+  if(!isBuiltin){
+    if(isNew){
+      // Check duplicate key
+      if(BUILTIN_ROLES.indexOf(key)>=0 || (DB.customRoles||[]).find(function(r){return r.key===key;})){
+        toast('⚠️ Key "'+key+'" មានរួចហើយ','r'); return;
+      }
+      if(!DB.customRoles) DB.customRoles = [];
+      DB.customRoles.push({key:key, label:icon+' '+lbl, color:color, builtin:false});
+    } else {
+      var idx = (DB.customRoles||[]).findIndex(function(r){return r.key===origKey;});
+      if(idx >= 0){
+        // handle key rename
+        if(key !== origKey){
+          if(BUILTIN_ROLES.indexOf(key)>=0 || (DB.customRoles||[]).find(function(r,i){return r.key===key && i!==idx;})){
+            toast('⚠️ Key "'+key+'" មានរួចហើយ','r'); return;
+          }
+          // move permissions to new key
+          DB.permissions[key] = DB.permissions[origKey]||{};
+          delete DB.permissions[origKey];
+          // update users
+          DB.users.forEach(function(u){ if(u.role===origKey) u.role=key; });
+        }
+        DB.customRoles[idx] = {key:key, label:icon+' '+lbl, color:color, builtin:false};
+      }
+    }
+  }
+
+  // Collect permissions from checkboxes
+  var newPerms = {dashboard:['view','add','edit','del']};
+  ROLE_PAGES.forEach(function(p){
+    var cb = document.getElementById('rp_'+p);
+    if(cb && cb.checked && !cb.disabled){
+      newPerms[p] = ['view'];
+    }
+  });
+
+  // For builtin roles, keep existing add/edit/del, just update view
+  if(isBuiltin){
+    var existing = DB.permissions[key]||{};
+    ROLE_PAGES.forEach(function(p){
+      var cb = document.getElementById('rp_'+p);
+      var hadPerms = (existing[p]||[]).filter(function(a){return a!=='view';});
+      if(cb && cb.checked){
+        newPerms[p] = ['view'].concat(hadPerms);
+      } else {
+        newPerms[p] = hadPerms; // keep add/edit/del but remove view
+      }
+    });
+    DB.permissions[key] = newPerms;
+  } else {
+    DB.permissions[isNew ? key : (key!==origKey ? key : origKey)] = newPerms;
+  }
+
+  saveDB();
+  applyNavPermissions();
+  populateRoleSelect();
+  rRoles();
+  addLog('edit','Role: '+(icon+' '+lbl));
+  toast('✅ Role "'+lbl+'" បានរក្សាទុក!');
+  cancelRoleForm();
+}
+
+function cancelRoleForm(){
+  document.getElementById('roleFormTitle').textContent = '✏️ កែ Role';
+  document.getElementById('roleFormBody').innerHTML = '<div class="empty" style="padding:30px 0"><div class="empty-i">👈</div><p>ចុចប៊ូតុង ✏️ ដើម្បីកែ Role</p></div>';
+}
+
+function deleteRole(key){
+  if(BUILTIN_ROLES.indexOf(key)>=0){ toast('🚫 មិនអាចលុប Built-in Role','r'); return; }
+  var r = (DB.customRoles||[]).find(function(x){return x.key===key;});
+  if(!confirm('លុប Role "'+(r?r.label:key)+'"?\nអ្នកប្រើដែលប្រើ Role នេះ នឹងផ្លាស់ទៅ viewer')) return;
+  DB.customRoles = (DB.customRoles||[]).filter(function(x){return x.key!==key;});
+  delete DB.permissions[key];
+  DB.users.forEach(function(u){ if(u.role===key) u.role='viewer'; });
+  saveDB(); populateRoleSelect(); rRoles(); cancelRoleForm();
+  addLog('del','លុប Role: '+key);
+  toast('🗑️ លុប Role បានជោគជ័យ','a');
+}
+
+
+// ==================== ANDROID WEBVIEW / APK FIX ====================
+// Detects real device pixel width and forces correct layout
+(function(){
+  // Force viewport meta for Android WebView / APK
+  var vp = document.querySelector('meta[name="viewport"]');
+  if(vp){
+    vp.setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+  }
+  // Prevent font resize on orientation change
+  document.documentElement.style.webkitTextSizeAdjust = '100%';
+  document.documentElement.style.textSizeAdjust = '100%';
+
+  // APK / WebView: window.innerWidth may return physical px before layout
+  // Force a reflow after DOM ready to get accurate width
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(function(){
+      fixMobileStatsGrids();
+      fixWebViewLayout();
+    }, 100);
+  });
+
+  // Re-run on orientation change (APK)
+  window.addEventListener('orientationchange', function(){
+    setTimeout(function(){
+      fixMobileStatsGrids();
+      fixWebViewLayout();
+    }, 300);
+  });
+})();
+
+// ── fixWebViewLayout: force-correct layout for APK/WebView on every page switch ──
+function fixWebViewLayout(){
+  var w = window.innerWidth;
+
+  // Force #main and #app to fill screen width
+  var app  = document.getElementById('app');
+  var main = document.getElementById('main');
+  if(app){
+    app.style.width  = '100%';
+    app.style.maxWidth = '100%';
+    app.style.overflowX = 'hidden';
+  }
+  if(main){
+    main.style.width = '100%';
+    main.style.maxWidth = '100%';
+    main.style.overflowX = 'hidden';
+    main.style.boxSizing = 'box-sizing';
+  }
+
+  // Force body/html no horizontal scroll
+  document.body.style.overflowX = 'hidden';
+  document.body.style.width = '100%';
+  document.documentElement.style.overflowX = 'hidden';
+
+  // Force all .page to fill 100% width
+  document.querySelectorAll('.page.active').forEach(function(pg){
+    pg.style.width = '100%';
+    pg.style.maxWidth = '100%';
+    pg.style.boxSizing = 'border-box';
+  });
+
+  // Force .content padding correct for screen size
+  var contentEl = document.querySelector('#main > .content');
+  if(contentEl){
+    if(w <= 360)       contentEl.style.padding = '8px';
+    else if(w <= 599)  contentEl.style.padding = '10px';
+    else if(w <= 720)  contentEl.style.padding = '14px';
+    else               contentEl.style.padding = '';
+  }
+
+  // Force cards full width on mobile
+  if(w <= 720){
+    document.querySelectorAll('.card').forEach(function(c){
+      c.style.width = '100%';
+      c.style.boxSizing = 'border-box';
+      c.style.maxWidth = '100%';
+    });
+    document.querySelectorAll('.stats-grid,.stat').forEach(function(s){
+      s.style.boxSizing = 'border-box';
+      s.style.maxWidth = '100%';
+    });
+  }
+
+  // APK: force sidebar margin on main when sidebar is hidden
+  if(w <= 720){
+    if(main) main.style.marginLeft = '0px';
+  }
+}
+
+loadDB();
+// Check session
+const sid=sessionStorage.getItem('rms_session');
+if(sid){ const u=DB.users.find(x=>x.id===sid&&x.status==='active'); if(u){ CU=u; initApp(); } }
+document.getElementById('loginScreen').style.display=sid&&CU?'none':'flex';
+
+// Close modal on bg click
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// Init modals when opened
+document.getElementById('mAddUser').addEventListener('click',()=>{},false);
+
+// ==================== MENU VISIBILITY ====================
+// ==================== SIDEBAR COLLAPSE ====================
+function toggleSidebar(){
+  // Desktop toggle
+  if(window.innerWidth > 768){
+    document.getElementById('app').classList.toggle('sb-collapsed');
+    try{ localStorage.setItem('rms_sb', document.getElementById('app').classList.contains('sb-collapsed')?'1':'0'); }catch(e){}
+    var tip = document.getElementById('sb-tooltip');
+    if(tip) tip.style.display = 'none';
+  } else {
+    toggleMobileSidebar();
+  }
+}
+function toggleMobileSidebar(){
+  var app = document.getElementById('app');
+  var ov  = document.getElementById('sb-overlay');
+  var isOpen = app.classList.contains('mob-open');
+  if(isOpen){
+    app.classList.remove('mob-open');
+    ov.classList.remove('open');
+    setTimeout(function(){ ov.style.display='none'; }, 250);
+  } else {
+    ov.style.display='block';
+    setTimeout(function(){ ov.classList.add('open'); }, 10);
+    app.classList.add('mob-open');
+  }
+}
+function closeMobileSidebar(){
+  var app = document.getElementById('app');
+  var ov  = document.getElementById('sb-overlay');
+  app.classList.remove('mob-open');
+  ov.classList.remove('open');
+  setTimeout(function(){ ov.style.display='none'; }, 250);
+}
+function initSidebar(){
+  try{ if(localStorage.getItem('rms_sb')==='1') document.getElementById('app').classList.add('sb-collapsed'); }catch(e){}
+  setupSidebarTooltip();
+  // Auto-close mobile sidebar on nav click
+  document.querySelectorAll('#sidebar .nav-item').forEach(function(el){
+    el.addEventListener('click', function(){
+      if(window.innerWidth <= 768) closeMobileSidebar();
+    });
+  });
+}
+
+function setupSidebarTooltip(){
+  var tip = document.getElementById('sb-tooltip');
+  if(!tip) return;
+  document.querySelectorAll('#sidebar .nav-item').forEach(function(el){
+    el.addEventListener('mouseenter', function(e){
+      if(!document.getElementById('app').classList.contains('sb-collapsed')) return;
+      var label = el.getAttribute('data-label');
+      if(!label) return;
+      tip.textContent = label;
+      tip.style.display = 'block';
+      // Position vertically centered on the hovered item
+      var rect = el.getBoundingClientRect();
+      tip.style.top = (rect.top + rect.height/2) + 'px';
+    });
+    el.addEventListener('mouseleave', function(){
+      tip.style.display = 'none';
+    });
+    el.addEventListener('click', function(){
+      tip.style.display = 'none';
+    });
+  });
+}
+
+// ==================== PERMISSIONS: ROLE PAGES ====================
+// DB.permissions[role][page] = array of allowed actions (view,add,edit,del)
+// Menu visibility is derived: if role has 'view' permission -> show menu
+
+
+
+function updateNavGroups(){
+  document.querySelectorAll('#sidebar .nav-group').forEach(function(grp){
+    var items = grp.querySelectorAll('.nav-item');
+    var anyVisible = false;
+    items.forEach(function(it){ if(it.style.display !== 'none') anyVisible = true; });
+    var lbl = grp.querySelector('.nav-label');
+    if(lbl) lbl.style.display = anyVisible ? '' : 'none';
+    grp.style.display = anyVisible ? '' : 'none';
+  });
+}
+
+// ==================== MENU VIS RENDER (Admin panel tab) ====================
+
+
+
+
+
+
+// ==================== MOBILE STATS GRID FIX ====================
+function fixMobileStatsGrids() {
+  var w = window.innerWidth;
+  var isTiny    = w <= 360;
+  var isMobile  = w > 360 && w <= 599;
+  var isPhone720 = w >= 600 && w <= 720;
+  var isTablet  = w > 720 && w <= 900;
+
+  var ids = ['dashStats','tapStats','invStats','saleStats','finStats','repYieldStats'];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = 'grid';
+    if (isTiny || isMobile) {
+      el.style.gridTemplateColumns = 'repeat(2, 1fr)';
+      el.style.gap = isTiny ? '6px' : '8px';
+      el.style.marginBottom = isTiny ? '10px' : '12px';
+    } else if (isPhone720 || isTablet) {
+      el.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      el.style.gap = '10px';
+      el.style.marginBottom = '14px';
+    } else {
+      el.style.gridTemplateColumns = '';
+      el.style.gap = '';
+      el.style.marginBottom = '';
+    }
+  });
+  // Fix stat cards font size
+  document.querySelectorAll('.stat-val, .stat-val-sm').forEach(function(el) {
+    var isSm = el.classList.contains('stat-val-sm');
+    if (isTiny) {
+      el.style.fontSize = isSm ? '10px' : '12px';
+      el.style.wordBreak = 'break-word';
+    } else if (isMobile) {
+      el.style.fontSize = isSm ? '11px' : '14px';
+      el.style.wordBreak = 'break-word';
+    } else if (isPhone720) {
+      el.style.fontSize = isSm ? '12px' : '16px';
+      el.style.wordBreak = 'break-word';
+    } else {
+      el.style.fontSize = '';
+      el.style.wordBreak = '';
+    }
+  });
+  // Fix sec-hd (section headers with buttons)
+  document.querySelectorAll('.sec-hd').forEach(function(el) {
+    if (isTiny || isMobile || isPhone720) {
+      el.style.display = 'flex';
+      el.style.flexWrap = 'wrap';
+      el.style.gap = isTiny ? '6px' : '8px';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'space-between';
+    } else {
+      el.style.display = '';
+      el.style.flexWrap = '';
+      el.style.gap = '';
+    }
+  });
+  // Fix grid2/grid3 stacking
+  document.querySelectorAll('.grid2, .grid3').forEach(function(el) {
+    if (isTiny || isMobile) {
+      el.style.gridTemplateColumns = '1fr';
+    } else {
+      el.style.gridTemplateColumns = '';
+    }
+  });
+  // Fix table-wrap
+  document.querySelectorAll('.table-wrap').forEach(function(el) {
+    if (isTiny || isMobile || isPhone720) {
+      el.style.overflowX = 'auto';
+      el.style.webkitOverflowScrolling = 'touch';
+      el.style.display = 'block';
+      el.style.width = '100%';
+    }
+  });
+}
+
+// Run on load and after every page render
+window.addEventListener('resize', function(){
+  fixMobileStatsGrids();
+  fixWebViewLayout();
+});
+
+fixMobileStatsGrids();
+fixWebViewLayout();
+</script>
+</body>
+</html>
